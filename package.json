@@ -1,0 +1,17 @@
+{
+    "name": "potd-bot",
+    "version": "1.0.0",
+    "description": "",
+    "main": "dist/index.js",
+    "scripts": {
+        "start": "tsc && node ."
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "discord.js": "^13.7.0"
+    },
+    "devDependencies": {
+        "typescript": "^4.6.4"
+    }
+}
