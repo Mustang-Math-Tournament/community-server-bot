@@ -2,7 +2,7 @@
 // Add problem command.
 
 import { Message } from "discord.js";
-import { isAdmin } from "../checkPermissions";
+import { verifyAdmin } from "../checkPermissions";
 import { Command } from "../Command";
 import { Problem } from "../Problem";
 import { addProblem } from "../problemQueue";
@@ -25,10 +25,7 @@ function execAddProblem(msg: Message, text: string) {
         msg.channel.send("You can only run this command in a server.");
         return;
     }
-    if (!isAdmin(msg.channel)) {
-        msg.channel.send("You do not have permission to add problems.");
-        return;
-    }
+    if (!verifyAdmin(msg, true)) return;
 
     const userId = msg.member.id;
     if (!users[userId]) {

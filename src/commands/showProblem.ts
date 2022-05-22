@@ -2,7 +2,7 @@
 // Command to show a problem given the ID, or show the current problem.
 
 import { Message } from "discord.js";
-import { isAdmin } from "../checkPermissions";
+import { isAdmin, verifyAdmin } from "../checkPermissions";
 import { Command } from "../Command";
 import { Problem } from "../Problem";
 import { getProblem, getTopProblem } from "../problemQueue";
@@ -13,10 +13,7 @@ function showProblem(msg: Message, text: string) {
         msg.channel.send("You can only run this command in a server.");
         return;
     }
-    if (!isAdmin(msg.channel)) {
-        msg.channel.send("You do not have permission to add problems.");
-        return;
-    }
+    if (!verifyAdmin(msg, true)) return; 
     
     let problem: Problem;
     if (text === "") {

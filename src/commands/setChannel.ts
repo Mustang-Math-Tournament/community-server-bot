@@ -16,7 +16,7 @@ async function setChannel(msg: Message, text: string) {
     }
 
     if (text === "") {
-        msg.channel.send("Provide the id of the channel as an argument, or use `setchannel here` to set this as the admin channel.");
+        msg.channel.send("Provide the id of the channel as an argument, or use command `setchannel here` to set this as the admin channel.");
         return;
     }
 
@@ -24,9 +24,11 @@ async function setChannel(msg: Message, text: string) {
     if (text === "here") {
         resChannel = msg.channel;
     } else {
-        resChannel = await msg.guild.channels.fetch(text);
+        try {
+            resChannel = await msg.guild.channels.fetch(text);
+        } catch (err) {} // handled in next if block
         if (!resChannel) {
-            msg.channel.send("Could not find channel with that id. Use `setchannel here` to set this channel as the admin channel.");
+            msg.channel.send("Could not find channel with that id. Use command `setchannel here` to set this channel as the admin channel.");
             return;
         }
     }
