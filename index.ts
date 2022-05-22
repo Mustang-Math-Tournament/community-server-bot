@@ -18,19 +18,24 @@ client.on("messageCreate", (message) => {
     console.log("Received", text);
 
     // run command
-    // if no commands match, don't do anything
+    // if no commands match, only then run listeners
+    let foundCommand = false;
     if (text.toLowerCase().startsWith(prefix.toLowerCase())) {
         const withoutPrefix = text.slice(prefix.length);
         for (const command of commandList) {
             if (command.matchAlias(withoutPrefix)) {
                 command.checkExecute(message, withoutPrefix);
+                foundCommand = true;
+                break;
             }
         }
     }
 
-    // run listeners
-    for (const command of commandList) {
-        command.checkListen(message);
+    if (!foundCommand) {
+        // run listeners
+        for (const command of commandList) {
+            command.checkListen(message);
+        }
     }
 });
 

@@ -7,13 +7,15 @@ function createId() {
 }
 
 export class Problem {
-    problem: string;
+    question: string;
     answer: string;
     id: number;
+    images?: string[]; // proxy URLs of attachments
 
-    constructor(problem: string, answer: string) {
-        this.problem = problem;
+    constructor(question: string, answer: string, images?: string[]) {
+        this.question = question;
         this.answer = answer;
         this.id = createId();
+        this.images = images;
     }
 }
