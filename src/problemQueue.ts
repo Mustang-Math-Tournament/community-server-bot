@@ -61,5 +61,9 @@ export function isValidProblemId(id: string | number) {
 
 // If you need to edit a problem, just (ab)use the fact that objects are references and modify the properties directly.
 
+export function getAllProblems() {
+    return problemQueue;
+}
+
 loadProblems();
 nodeCleanup(saveProblems);
