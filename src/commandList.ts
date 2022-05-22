@@ -5,10 +5,12 @@
 import { Command } from "./Command";
 import commandAddProblem from "./commands/addProblem";
 import commandEcho from "./commands/echo";
+import commandShowProblem from "./commands/showProblem";
 
 let commandList: Command[] = [
     commandEcho,
-    commandAddProblem
+    commandAddProblem,
+    commandShowProblem
 ];
 
 export default commandList;

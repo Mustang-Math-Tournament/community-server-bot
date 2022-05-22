@@ -1,7 +1,7 @@
 
 // Contains the logic for storing problems.
 
-import { Problem } from "./Problem";
+import { Problem, ProblemOptions } from "./Problem";
 import fs from "fs";
 import nodeCleanup from "node-cleanup";
 
@@ -12,7 +12,8 @@ let problemQueue: Problem[] = [];
 // read problems that were saved to the file
 function loadProblems() {
     if (fs.existsSync(FILE_PATH)) {
-        problemQueue = JSON.parse(fs.readFileSync(FILE_PATH, "utf8")) as Problem[];
+        const problemJSON = JSON.parse(fs.readFileSync(FILE_PATH, "utf8")) as ProblemOptions[];
+        problemQueue.push(...problemJSON.map(x => new Problem(x)))
     }
 }
 
@@ -29,11 +30,13 @@ export function addProblem(prob: Problem) {
 
 // Get the first problem in the queue
 export function getTopProblem() {
+    if (problemQueue.length === 0) return undefined;
     return problemQueue[0];
 }
 
 // Remove the first problem in the queue
 export function removeTopProblem() {
+    if (problemQueue.length === 0) return;
     problemQueue = problemQueue.slice(1);
 }
 

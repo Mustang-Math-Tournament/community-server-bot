@@ -7,8 +7,6 @@ import { Command } from "../Command";
 import { Problem } from "../Problem";
 import { addProblem } from "../problemQueue";
 
-const IMAGE_TYPES = ["png", "jpg", "jpeg", "gif", "webp"];
-
 type ProblemStep = "question" | "answer";
 
 // Represents a problem that is partially created.
@@ -40,7 +38,7 @@ function execAddProblem(msg: Message, text: string) {
         // user already has a problem, but make new one
         msg.channel.send("Discarding current problem and creating a new one. Send the question text, and attach any images.");
     }
-    users[userId] = { step: "question", channel: msg.channel.id, problem: new Problem("", "")};
+    users[userId] = { step: "question", channel: msg.channel.id, problem: new Problem({})};
 }
 
 function listen(msg: Message) {
@@ -59,8 +57,8 @@ function listen(msg: Message) {
             const attachments = msg.attachments;
             if (attachments.size > 0) {
                 partialProblem.problem.images = Array.from(attachments.values())
-                    .filter(x => x.contentType && IMAGE_TYPES.includes(x.contentType))
-                    .map(x => x.proxyURL);
+                    .filter(x => x.contentType && x.contentType.startsWith("image"))
+                    .map(x => x.url);
             }
 
             msg.channel.send("Question recorded. Now send the answer.");
