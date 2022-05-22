@@ -2,10 +2,10 @@
 // Command to show a problem given the ID, or show the current problem.
 
 import { Message } from "discord.js";
-import { isAdmin, verifyAdmin } from "../checkPermissions";
-import { Command } from "../Command";
-import { Problem } from "../Problem";
-import { getProblem, getTopProblem } from "../problemQueue";
+import { verifyAdmin } from "../../checkPermissions";
+import { Command } from "../../Command";
+import { Problem } from "../../Problem";
+import { getProblem, getTopProblem } from "../../problemQueue";
 
 function showProblem(msg: Message, text: string) {
     // verify admin

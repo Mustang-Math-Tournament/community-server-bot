@@ -50,5 +50,16 @@ export function removeProblem(id: number) {
     problemQueue = problemQueue.filter(x => x.id !== id);
 }
 
+export function isValidProblemId(id: string | number) {
+    if (typeof id === "number") {
+        return problemQueue.some(x => x.id === id);
+    }
+    const parsed = parseInt(id);
+    if (isNaN(parsed)) return false;
+    return problemQueue.some(x => x.id === parsed);
+}
+
+// If you need to edit a problem, just (ab)use the fact that objects are references and modify the properties directly.
+
 loadProblems();
 nodeCleanup(saveProblems);

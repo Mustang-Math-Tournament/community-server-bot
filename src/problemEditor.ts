@@ -1,11 +1,11 @@
 
-// Add problem command.
+// Procedure to edit problems.
+// This is created as a command, but that's only to make it convenient to listen.
 
 import { Message } from "discord.js";
-import { verifyAdmin } from "../checkPermissions";
-import { Command } from "../Command";
-import { Problem } from "../Problem";
-import { addProblem } from "../problemQueue";
+import { Command } from "./Command";
+import { Problem } from "./Problem";
+import { addProblem } from "./problemQueue";
 
 type ProblemStep = "question" | "answer";
 
@@ -13,29 +13,18 @@ type ProblemStep = "question" | "answer";
 interface PartialProblem {
     step: ProblemStep; // which part of the problem is being waited for
     channel: string; // id of channel the problem is being created in
+    toAdd: boolean; // whether or not to add the problem at the end
     problem: Problem;
 }
 
-// List of users and their current problem
 let users: { [key: string]: PartialProblem } = {};
 
-function execAddProblem(msg: Message, text: string) {
-    // verify admin
-    if (!msg.member) {
-        msg.channel.send("You can only run this command in a server.");
-        return;
-    }
-    if (!verifyAdmin(msg, true)) return;
+export function getUser(userId: string) {
+    return users[userId];
+}
 
-    const userId = msg.member.id;
-    if (!users[userId]) {
-        // start a new problem
-        msg.channel.send("Creating a new problem. Send the question text, and attach any images.");
-    } else {
-        // user already has a problem, but make new one
-        msg.channel.send("Discarding current problem and creating a new one. Send the question text, and attach any images.");
-    }
-    users[userId] = { step: "question", channel: msg.channel.id, problem: new Problem({})};
+export function setUser(userId: string, partial: PartialProblem) {
+    users[userId] = partial;
 }
 
 function listen(msg: Message) {
@@ -64,21 +53,20 @@ function listen(msg: Message) {
         case "answer":
             partialProblem.problem.answer = msg.cleanContent;
 
-            msg.channel.send("Answer recorded. Problem added to queue. ID: `"+partialProblem.problem.id+"`");
-            addProblem(partialProblem.problem);
+            msg.channel.send(`Answer recorded. ${partialProblem.toAdd ? "Problem added to queue. " : "Finished editing problem. "}ID: \`${partialProblem.problem.id}\``);
+            if (partialProblem.toAdd) addProblem(partialProblem.problem);
             delete users[userId];
             break;
     }
 }
 
-const commandAddProblem = new Command({
-    name: "Add Problem",
-    description: "Add a new Problem of the Day to the queue.",
-    aliases: ["addproblem"],
-    exec: execAddProblem,
-    needsArgs: false,
+const fakeEditorCommand = new Command({
+    name: "Problem Editor",
+    description: "A fake listening command that allows editing of problems.",
+    aliases: [],
+    exec: (()=>{}),
     listens: true,
     listenExec: listen
 });
 
-export default commandAddProblem;
+export default fakeEditorCommand;
