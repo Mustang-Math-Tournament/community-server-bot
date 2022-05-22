@@ -2,6 +2,7 @@ import { Client, Intents } from "discord.js";
 import { token } from "./config.json";
 import { prefix } from "./settings.json";
 import commandList from "./src/commandList";
+import "./src/problemQueue";
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 
@@ -14,22 +15,26 @@ client.on("messageCreate", (message) => {
     if (message.author.bot) return;
 
     const text = message.content;
-    console.log("Received", text);
 
     // run command
-    // if no commands match, don't do anything
+    // if no commands match, only then run listeners
+    let foundCommand = false;
     if (text.toLowerCase().startsWith(prefix.toLowerCase())) {
         const withoutPrefix = text.slice(prefix.length);
         for (const command of commandList) {
             if (command.matchAlias(withoutPrefix)) {
                 command.checkExecute(message, withoutPrefix);
+                foundCommand = true;
+                break;
             }
         }
     }
 
-    // run listeners
-    for (const command of commandList) {
-        command.checkListen(message);
+    if (!foundCommand) {
+        // run listeners
+        for (const command of commandList) {
+            command.checkListen(message);
+        }
     }
 });
 
