@@ -15,7 +15,6 @@ client.on("messageCreate", (message) => {
     if (message.author.bot) return;
 
     const text = message.content;
-    console.log("Received", text);
 
     // run command
     // if no commands match, only then run listeners

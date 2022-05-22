@@ -1,10 +1,7 @@
-import { GuildMember, User } from "discord.js";
+import { Channel, GuildChannel, PartialDMChannel } from "discord.js";
+import { getSetting } from "./settings";
 
-let adminRoles: string[] = ["977750990407217152"];
-
-export function isAdmin(user: User | GuildMember) {
-    if (!(user instanceof GuildMember)) {
-        return false; // can't do permission stuff in dms
-    }
-    return user.roles.cache.hasAny(...adminRoles);
+export function isAdmin(channel: Channel | PartialDMChannel) {
+    if (!(channel instanceof GuildChannel)) return false;
+    return getSetting(channel.guildId, "adminChannelId") === channel.id;
 }

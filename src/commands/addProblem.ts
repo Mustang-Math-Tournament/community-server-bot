@@ -25,7 +25,7 @@ function execAddProblem(msg: Message, text: string) {
         msg.channel.send("You can only run this command in a server.");
         return;
     }
-    if (!isAdmin(msg.member)) {
+    if (!isAdmin(msg.channel)) {
         msg.channel.send("You do not have permission to add problems.");
         return;
     }

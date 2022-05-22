@@ -51,6 +51,4 @@ export function removeProblem(id: number) {
 }
 
 loadProblems();
-nodeCleanup(() => {
-    saveProblems();
-});
+nodeCleanup(saveProblems);
