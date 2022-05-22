@@ -2,6 +2,7 @@ import { Client, Intents } from "discord.js";
 import { token } from "./config.json";
 import { prefix } from "./settings.json";
 import commandList from "./src/commandList";
+import "./src/problemQueue";
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 

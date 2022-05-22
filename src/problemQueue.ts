@@ -3,6 +3,7 @@
 
 import { Problem } from "./Problem";
 import fs from "fs";
+import nodeCleanup from "node-cleanup";
 
 const FILE_PATH = "./stored/problemqueue.json";
 
@@ -16,8 +17,9 @@ function loadProblems() {
 }
 
 // write problems to file
-export function saveProblems() {
+function saveProblems() {
     fs.writeFileSync(FILE_PATH, JSON.stringify(problemQueue));
+    console.log("Saved problems");
 }
 
 // Add a problem to the end of the queue
@@ -46,3 +48,6 @@ export function removeProblem(id: number) {
 }
 
 loadProblems();
+nodeCleanup(() => {
+    saveProblems();
+});
