@@ -5,7 +5,10 @@ import { GuildChannel, Message, Permissions } from "discord.js";
 import { Command } from "../Command";
 import { setSetting } from "../settings";
 
-async function setChannel(msg: Message, text: string) {
+type ChannelType = "admin" | "announce";
+type ChannelArgumentType = "adminChannelId" | "announceChannelId";
+
+async function setChannel(msg: Message, text: string, type: ChannelType) {
     if (!msg.member || !msg.guild || !msg.channel.isText()) {
         msg.channel.send("You can only run this command in a server text channel.");
         return;
@@ -16,7 +19,7 @@ async function setChannel(msg: Message, text: string) {
     }
 
     if (text === "") {
-        msg.channel.send("Provide the id of the channel as an argument, or use command `setchannel here` to set this as the admin channel.");
+        msg.channel.send("Provide the id of the channel as an argument, or use command `setchannel "+type+" here` to set this as the "+type+"channel.");
         return;
     }
 
@@ -28,7 +31,7 @@ async function setChannel(msg: Message, text: string) {
             resChannel = await msg.guild.channels.fetch(text);
         } catch (err) {} // handled in next if block
         if (!resChannel) {
-            msg.channel.send("Could not find channel with that id. Use command `setchannel here` to set this channel as the admin channel.");
+            msg.channel.send("Could not find channel with that id. Use command `setchannel "+type+" here` to set this channel as the "+type+" channel.");
             return;
         }
     }
@@ -42,15 +45,30 @@ async function setChannel(msg: Message, text: string) {
         return;
     }
 
-    setSetting(msg.guild.id, "adminChannelId", resChannel.id);
-    msg.channel.send(`Set \`${resChannel.name}\` to be the admin-only command channel.`);
+    setSetting(msg.guild.id, type+"ChannelId" as ChannelArgumentType, resChannel.id);
+    msg.channel.send(`Set \`${resChannel.name}\` to be the ${type} channel.`);
 }
+
+const cmdSetAdminChannel = new Command({
+    name: "Set Admin Channel",
+    description: "Set the admin channel.",
+    aliases: ["admin"],
+    exec: (msg, text) => setChannel(msg, text, "admin")
+});
+
+const cmdSetAnnounceChannel = new Command({
+    name: "Set Announce Channel",
+    description: "Set the announce channel.",
+    aliases: ["announce"],
+    exec: (msg, text) => setChannel(msg, text, "announce")
+});
 
 const commandSetChannel = new Command({
     name: "Set Admin Channel",
-    description: "Sets the channel in which admin-only commands are able to be sent.",
+    description: "Sets the special channels in the server. Arguments: `admin`, `announce`",
     aliases: ["setchannel"],
-    exec: setChannel
+    exec: (msg, text) => msg.channel.send("Please use `admin` or `announce` to set the respective channel ids."),
+    subcommands: [cmdSetAdminChannel, cmdSetAnnounceChannel]
 });
 
 export default commandSetChannel;
