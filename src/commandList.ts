@@ -11,6 +11,7 @@ import fakeEditorCommand from "./problemEditor";
 import commandEditProblem from "./commands/problem/editProblem";
 import commandRemoveProblem from "./commands/problem/removeProblem";
 import commandListProblems from "./commands/problem/listProblems";
+import commandSetSchedule from "./commands/setSchedule";
 
 let commandList: Command[] = [
     commandAddProblem,
@@ -19,6 +20,7 @@ let commandList: Command[] = [
     commandListProblems,
     commandRemoveProblem,
     commandSetChannel,
+    commandSetSchedule,
     commandShowProblem,
     fakeEditorCommand,
 ];

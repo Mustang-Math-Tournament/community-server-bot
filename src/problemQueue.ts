@@ -8,18 +8,28 @@ import nodeCleanup from "node-cleanup";
 const FILE_PATH = "./stored/problemqueue.json";
 
 let problemQueue: Problem[] = [];
+let shownProblem: Problem | null = null;
+
+interface ProblemSave {
+    problemQueue: ProblemOptions[];
+    shownProblem: ProblemOptions | null;
+}
 
 // read problems that were saved to the file
-function loadProblems() {
+export function loadProblems() {
     if (fs.existsSync(FILE_PATH)) {
-        const problemJSON = JSON.parse(fs.readFileSync(FILE_PATH, "utf8")) as ProblemOptions[];
-        problemQueue.push(...problemJSON.map(x => new Problem(x)))
+        const problemJSON = JSON.parse(fs.readFileSync(FILE_PATH, "utf8")) as ProblemSave;
+        problemQueue.push(...problemJSON.problemQueue.map(x => new Problem(x)));
+        shownProblem = problemJSON.shownProblem ? new Problem(problemJSON.shownProblem) : null;
     }
 }
 
 // write problems to file
 function saveProblems() {
-    fs.writeFileSync(FILE_PATH, JSON.stringify(problemQueue));
+    fs.writeFileSync(FILE_PATH, JSON.stringify({
+        problemQueue,
+        shownProblem
+    }));
     console.log("Saved problems");
 }
 
@@ -65,5 +75,12 @@ export function getAllProblems() {
     return problemQueue;
 }
 
-loadProblems();
+export function getShown() {
+    return shownProblem;
+}
+
+export function setShown(p: Problem | null) {
+    shownProblem = p;
+}
+
 nodeCleanup(saveProblems);

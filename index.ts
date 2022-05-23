@@ -3,10 +3,14 @@ import { token } from "./config.json";
 import { prefix } from "./settings.json";
 import commandList from "./src/commandList";
 import "./src/problemQueue";
+import { loadProblems } from "./src/problemQueue";
+import { setAllSchedules } from "./src/scheduler";
+import { loadSettings } from "./src/settings";
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 
 client.once("ready", async () => {
+    await setAllSchedules(client);
     console.log("Ready!");
 });
 
@@ -38,4 +42,6 @@ client.on("messageCreate", (message) => {
     }
 });
 
+loadSettings();
+loadProblems();
 client.login(token);

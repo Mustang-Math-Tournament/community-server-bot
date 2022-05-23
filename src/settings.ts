@@ -5,11 +5,13 @@ const FILE_PATH = "./stored/guildsettings.json";
 
 interface GuildSettings {
     adminChannelId?: string;
+    announceChannelId?: string;
+    schedule?: string;
 }
 
 let settings: { [key: string]: GuildSettings } = {};
 
-function loadSettings() {
+export function loadSettings() {
     if (existsSync(FILE_PATH)) {
         settings = JSON.parse(readFileSync(FILE_PATH, "utf8")) as { [key: string]: GuildSettings };
     }
@@ -30,5 +32,4 @@ export function setSetting(guildId: string, setting: keyof GuildSettings, value:
     settings[guildId][setting] = value;
 }
 
-loadSettings();
 nodeCleanup(saveSettings);
