@@ -2,6 +2,7 @@
 // pagination stolen from another one of my projects
 
 import Discord = require("discord.js");
+import nodeCleanup = require("node-cleanup");
 
 const emojis = ["⏪","◀️","▶️","⏩"];
 
@@ -13,6 +14,9 @@ interface PaginationOptions {
     startMin?: number;
     startMax?: number;
 }
+
+// List of messages with active buttons.
+let messageList: Discord.Message[] = [];
 
 class Pagination {
     startMsg: Discord.Message;
@@ -106,6 +110,11 @@ class Pagination {
             this.updateButtons();
             i.update({ content: this.display(this.curMin, this.curMax), components: [this.emojiRow!] });
         })
+
+        collector.on("end", coll => {
+            this.displayMsg?.edit({ components: [] });
+            messageList = messageList.filter(x => x.id !== this.displayMsg?.id);
+        })
     }
 
     updateButtons() {
@@ -126,5 +135,13 @@ class Pagination {
         }
     }
 }
+
+// Cleanup function to remove on closing.
+function removeInteractions() {
+    messageList.forEach(msg => msg.edit({ components: [] }));
+    console.log("Maybe edited messages");
+}
+
+nodeCleanup(removeInteractions);
 
 export = Pagination;
