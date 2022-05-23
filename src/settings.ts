@@ -6,7 +6,7 @@ const FILE_PATH = "./stored/guildsettings.json";
 interface GuildSettings {
     adminChannelId?: string;
     announceChannelId?: string;
-    schedule?: string;
+    schedule?: [number, number];
 }
 
 let settings: { [key: string]: GuildSettings } = {};

@@ -4,6 +4,7 @@
 import { Message } from "discord.js";
 import { verifyAdmin } from "../checkPermissions";
 import { Command } from "../Command";
+import { setScheduler } from "../scheduler";
 import { setSetting } from "../settings";
 
 function setSchedule(msg: Message, text: string) {
@@ -17,25 +18,19 @@ function setSchedule(msg: Message, text: string) {
     const timeRegex = /^([0-2][0-9]):([0-5][0-9])$/;
     const matches = text.match(timeRegex);
     if (!matches) {
-        msg.channel.send("Please format release time as 24-hour hh:mm. Examples: 08:04, 23:59");
+        msg.channel.send("Please format release time as 24-hour hh:mm in UTC time zone. Examples: 08:04, 23:59");
         return;
     }
 
-    const groups = matches.groups;
-    if (!groups || !groups[1] || !groups[2]) {
-        msg.channel.send("Please format release time as 24-hour hh:mm. Examples: 08:04, 23:59");
-        return;
-    }
-
-    const hours = parseInt(groups[1]), minutes = parseInt(groups[2]);
+    const hours = parseInt(matches[1]), minutes = parseInt(matches[2]);
     if (hours < 0 || hours >= 24 || isNaN(hours) || minutes < 0 || minutes >= 60 || isNaN(minutes)) {
-        msg.channel.send("Invalid time. Please format release time as 24-hour hh:mm. Examples: 08:04, 23:59");
+        msg.channel.send("Invalid time. Please format release time as 24-hour hh:mm in UTC time zone. Examples: 08:04, 23:59");
         return;
     }
 
-    const cronSchedule = `${minutes} ${hours} * * *`;
-    console.log("Set schedule for", msg.guild.id, "to", cronSchedule);
-    setSetting(msg.guild.id, "schedule", cronSchedule);
+    msg.channel.send("Set schedule for this server to "+hours+":"+minutes);
+    setSetting(msg.guild.id, "schedule", [hours, minutes]);
+    setScheduler(msg.client, msg.guild.id);
 }
 
 const commandSetSchedule = new Command({

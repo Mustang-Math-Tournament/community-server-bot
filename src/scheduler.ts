@@ -9,7 +9,7 @@ import Schedule from "node-schedule";
 let scheduledJobs: { [key: string]: Schedule.Job } = {};
 
 async function errorInAdminChannel(client: Client, guildId: string, err: string) {
-    const adminChannelId = getSetting(guildId, "adminChannelId");
+    const adminChannelId = getSetting(guildId, "adminChannelId") as string | undefined;
     if (!adminChannelId) return;
     const channel = await client.channels.fetch(adminChannelId);
     if (!channel || !channel.isText()) return;
@@ -31,8 +31,11 @@ export async function releaseProblem(client: Client, guildId: string) {
         await errorInAdminChannel(client, guildId, "Error: There is no problem in the queue for today!");
         return;
     }
+    if (!getTopProblem()) {
+        await errorInAdminChannel(client, guildId, "Warning: There is no problem in the queue for tomorrow!");
+    }
 
-    const announceChannelId = getSetting(guildId, "announceChannelId");
+    const announceChannelId = getSetting(guildId, "announceChannelId") as string | undefined;
     if (!announceChannelId) {
         await errorInAdminChannel(client, guildId, "Error: There is no announcement channel set for this server!");
         return;
@@ -50,15 +53,19 @@ export async function releaseProblem(client: Client, guildId: string) {
 }
 
 export function setScheduler(client: Client, guildId: string) {
-    const guildSchedule = getSetting(guildId, "schedule");
+    const guildSchedule = getSetting(guildId, "schedule") as [number, number] | undefined;
     if (!guildSchedule) {
         throw new Error("Guild schedule needs to be set first!");
     }
 
+    const rule = new Schedule.RecurrenceRule();
+    rule.tz = "Etc/UTC";
+    [rule.hour, rule.minute] = guildSchedule;
+
     if (scheduledJobs[guildId]) {
-        scheduledJobs[guildId] = Schedule.rescheduleJob(scheduledJobs[guildId], guildSchedule);
+        scheduledJobs[guildId] = Schedule.rescheduleJob(scheduledJobs[guildId], rule);
     } else {
-        scheduledJobs[guildId] = Schedule.scheduleJob(guildSchedule, () => releaseProblem(client, guildId));
+        scheduledJobs[guildId] = Schedule.scheduleJob(rule, () => releaseProblem(client, guildId));
     }
 }
 

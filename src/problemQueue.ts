@@ -83,4 +83,8 @@ export function setShown(p: Problem | null) {
     shownProblem = p;
 }
 
+export function problemQueueSize() {
+    return problemQueue.length;
+}
+
 nodeCleanup(saveProblems);
