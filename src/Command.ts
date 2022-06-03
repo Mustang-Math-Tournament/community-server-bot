@@ -4,6 +4,7 @@
 // Commands are case insensitive.
 
 import { Message } from "discord.js";
+import { SlashCommandBuilder } from "@discordjs/builders";
 
 interface CommandOptions {
     name: string; // Name of the command.
@@ -82,5 +83,10 @@ export class Command {
             subcommand.checkListen(msg);
         }
         if (this.listens) this.listenExec(msg);
+    }
+
+    // Get the slash command for registration.
+    getSlash() {
+        return new SlashCommandBuilder(); // TODO: actually create it
     }
 }
