@@ -67,9 +67,8 @@ function buildSlash() {
 }
 
 const fakeEditorCommand = new Command({
-    name: "Problem Editor",
+    name: "problemeditor",
     description: "A fake listening command that allows editing of problems.",
-    aliases: [],
     exec: (()=>{}),
     listens: true,
     listenExec: listen,

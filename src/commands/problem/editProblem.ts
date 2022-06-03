@@ -39,9 +39,8 @@ function buildSlash() {
 }
 
 const commandEditProblem = new Command({
-    name: "Edit Problem",
+    name: "editproblem",
     description: "Edits a problem given its id",
-    aliases: ["editproblem"],
     exec: execEditProblem,
     buildSlash
 });

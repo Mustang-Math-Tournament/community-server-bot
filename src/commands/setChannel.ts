@@ -55,9 +55,8 @@ function buildAdminSlash() {
 }
 
 const cmdSetAdminChannel = new Command({
-    name: "Set Admin Channel",
+    name: "admin",
     description: "Set the admin channel.",
-    aliases: ["admin"],
     exec: (msg, text) => setChannel(msg, text, "admin"),
     isSubcommand: true,
     buildSlash: buildAdminSlash
@@ -68,9 +67,8 @@ function buildAnnounceSlash() {
 }
 
 const cmdSetAnnounceChannel = new Command({
-    name: "Set Announce Channel",
+    name: "announce",
     description: "Set the announce channel.",
-    aliases: ["announce"],
     exec: (msg, text) => setChannel(msg, text, "announce"),
     isSubcommand: true,
     buildSlash: buildAnnounceSlash
@@ -81,9 +79,8 @@ function buildSlash() {
 }
 
 const commandSetChannel = new Command({
-    name: "Set Admin Channel",
+    name: "setchannel",
     description: "Sets the special channels in the server. Arguments: `admin`, `announce`",
-    aliases: ["setchannel"],
     exec: (msg, text) => msg.channel.send("Please use `admin` or `announce` to set the respective channel ids."),
     subcommands: [cmdSetAdminChannel, cmdSetAnnounceChannel],
     buildSlash

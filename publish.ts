@@ -12,7 +12,7 @@ import { REST } from "@discordjs/rest";
 import { Routes, RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v9";
 import { SlashCommandBuilder } from "@discordjs/builders";
 
-const args = Minimist(process.argv);
+const args = Minimist(process.argv, { string: "guild" });
 
 if (!args.guild && !args.global) {
     console.log("Run `npm run publish -- --guild=<GUILD ID>` to publish commands to a certain guild.\n\
@@ -21,6 +21,7 @@ Run `npm run publish -- --global` to globally publish commands (NOT RECOMMENDED 
     let guildId: string | null = null;
     if (args.guild) {
         guildId = args.guild;
+        console.log("Adding to guild", guildId);
     } // else global
 
     const commandsJSON: RESTPostAPIApplicationCommandsJSONBody[] = [];
@@ -43,6 +44,8 @@ Run `npm run publish -- --global` to globally publish commands (NOT RECOMMENDED 
                 route,
                 { body: commandsJSON }
             );
+
+            console.log("Finished refreshing slash commands.");
         } catch (err) {
             console.error(err);
         }

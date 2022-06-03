@@ -40,9 +40,8 @@ function buildSlash() {
 }
 
 const commandSetSchedule = new Command({
-    name: "Set Schedule",
+    name: "setschedule",
     description: "Set the problem release schedule for this server.",
-    aliases: ["setschedule"],
     exec: setSchedule,
     buildSlash
 });

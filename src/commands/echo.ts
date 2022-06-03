@@ -16,9 +16,8 @@ function buildSlash() {
 }
 
 const commandEcho = new Command({
-    name: "Echo",
+    name: "echo",
     description: "Echoes the arguments to the command back.",
-    aliases: ["echo"],
     exec: echo,
     needsArgs: true,
     buildSlash

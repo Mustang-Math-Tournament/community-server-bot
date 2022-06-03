@@ -52,9 +52,8 @@ function buildSlash() {
 }
 
 const commandListProblems = new Command({
-    name: "List Problems",
+    name: "listproblems",
     description: "List problems currently in the queue.",
-    aliases: ["listproblems"],
     exec: listProblems,
     buildSlash
 });

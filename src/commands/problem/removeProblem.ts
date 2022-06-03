@@ -30,9 +30,8 @@ function buildSlash() {
 }
 
 const commandRemoveProblem = new Command({
-    name: "Remove Problem",
+    name: "removeproblem",
     description: "Remove a problem from the queue by id.",
-    aliases: ["removeproblem"],
     exec: execRemoveProblem,
     buildSlash
 });

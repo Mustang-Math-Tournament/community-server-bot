@@ -30,10 +30,9 @@ function buildSlash() {
 }
 
 const commandReleaseProblem = new Command({
-    name: "Release Problem",
+    name: "releaseproblem",
     description: "Immediately release a problem. Note that the schedule still continues as usual.",
     exec: forceReleaseProblem,
-    aliases: ["releaseproblem"],
     buildSlash
 });
 

@@ -12,7 +12,6 @@ type AnyCommandBuilder = SlashCommandBuilder | SlashCommandSubcommandBuilder | S
 interface CommandOptions {
     name: string; // Name of the command.
     description: string; // Description of the command.
-    aliases: string[]; // List of names that can be used to call the command. TODO: DEPRECATED SOON, USE NAME FOR CALLING IT
     subcommands?: Command[]; // Subcommands for this command.
     isSubcommand?: boolean; // Whether or not this command is a subcommand. Default false.
 
@@ -32,7 +31,6 @@ interface CommandOptions {
 export class Command {
     name: string;
     description: string;
-    aliases: string[];
     subcommands: Command[];
     isSubcommand: boolean;
     exec: (msg: Message, text: string) => any;
@@ -44,7 +42,6 @@ export class Command {
     constructor(opts: CommandOptions) {
         this.name = opts.name;
         this.description = opts.description;
-        this.aliases = opts.aliases.map(x => x.toLowerCase()); // case insensitive
         this.subcommands = opts.subcommands ?? [];
         this.isSubcommand = opts.isSubcommand ?? false;
         this.exec = opts.exec;
@@ -58,7 +55,7 @@ export class Command {
     matchAlias(text: string): boolean {
         if (text === "") return false;
         const firstWord = text.split(" ")[0];
-        return this.aliases.includes(firstWord.toLowerCase());
+        return this.name === firstWord.toLowerCase();
     }
 
     // Checks for matching subcommands, and executes the command if none found.
@@ -66,7 +63,7 @@ export class Command {
     checkExecute(msg: Message, text: string) {
         // remove command word
         let splitText = text.split(" ");
-        if (splitText.length > 0 && this.aliases.includes(splitText[0].toLowerCase())) {
+        if (splitText.length > 0 && this.name === splitText[0].toLowerCase()) {
             splitText = splitText.splice(1);
         }
         let newText = splitText.join(" ");

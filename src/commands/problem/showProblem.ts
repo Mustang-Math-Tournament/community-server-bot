@@ -46,9 +46,8 @@ function buildSlash() {
 }
 
 const commandShowProblem = new Command({
-    name: "Show Problem",
+    name: "showproblem",
     description: "Show a problem, with an id if given, or the first problem otherwise.",
-    aliases: ["showproblem"],
     exec: showProblem,
     buildSlash
 });
