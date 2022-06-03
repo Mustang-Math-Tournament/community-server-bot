@@ -1,6 +1,8 @@
 
 // Add problem command.
+// TODO: support slash commands
 
+import { SlashCommandBuilder } from "@discordjs/builders";
 import { Message } from "discord.js";
 import { verifyAdmin } from "../../checkPermissions";
 import { Command } from "../../Command";
@@ -26,11 +28,16 @@ function execAddProblem(msg: Message, text: string) {
     setUser(userId, { step: "question", channel: msg.channel.id, problem: new Problem({}), toAdd: true });
 }
 
+function buildSlash() {
+    return new SlashCommandBuilder();
+}
+
 const commandAddProblem = new Command({
     name: "Add Problem",
     description: "Add a new Problem of the Day to the queue.",
     aliases: ["addproblem"],
-    exec: execAddProblem
+    exec: execAddProblem,
+    buildSlash: buildSlash
 });
 
 export default commandAddProblem;

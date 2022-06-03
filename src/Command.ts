@@ -11,7 +11,7 @@ type AnyCommandBuilder = SlashCommandBuilder | SlashCommandSubcommandBuilder | S
 interface CommandOptions {
     name: string; // Name of the command.
     description: string; // Description of the command.
-    aliases: string[]; // List of names that can be used to call the command.
+    aliases: string[]; // List of names that can be used to call the command. TODO: DEPRECATED SOON, USE NAME FOR CALLING IT
     subcommands?: Command[]; // Subcommands for this command.
     isSubcommand?: boolean; // Whether or not this command is a subcommand. Default false.
 
@@ -25,7 +25,7 @@ interface CommandOptions {
     listens?: boolean; // Whether or not this command listens to all sent messages. Default false.
     listenExec?: (msg: Message) => any; // Function that executes on every message while listening.
 
-    createSlash: () => AnyCommandBuilder; // Function that creates a slash command.
+    buildSlash: () => AnyCommandBuilder; // Function that builds a slash command. Name and description are automatically set.
 }
 
 export class Command {
@@ -38,7 +38,7 @@ export class Command {
     needsArgs: boolean;
     listens: boolean;
     listenExec: (msg: Message) => any;
-    getSlash: () => AnyCommandBuilder;
+    buildSlash: () => AnyCommandBuilder;
 
     constructor(opts: CommandOptions) {
         this.name = opts.name;
@@ -50,7 +50,7 @@ export class Command {
         this.needsArgs = opts.needsArgs ?? false;
         this.listens = opts.listens ?? false;
         this.listenExec = opts.listenExec ?? (()=>{});
-        this.getSlash = opts.createSlash;
+        this.buildSlash = opts.buildSlash;
     }
 
     // Checks if text is a valid form of this command.
@@ -94,5 +94,12 @@ export class Command {
             subcommand.checkListen(msg);
         }
         if (this.listens) this.listenExec(msg);
+    }
+
+    // Get the full slash command including name + description.
+    getSlash() {
+        const built = this.buildSlash();
+        built.setName(this.name).setDescription(this.description);
+        return built;
     }
 }
