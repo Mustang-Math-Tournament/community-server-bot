@@ -1,6 +1,8 @@
 
 // Command to release a problem immediately.
+// TODO: support slash commands
 
+import { SlashCommandBuilder } from "@discordjs/builders";
 import { Message } from "discord.js";
 import { verifyAdmin } from "../checkPermissions";
 import { Command } from "../Command";
@@ -23,11 +25,16 @@ async function forceReleaseProblem(msg: Message, text: string) {
     msg.channel.send("Successfully released problem");
 }
 
+function buildSlash() {
+    return new SlashCommandBuilder();
+}
+
 const commandReleaseProblem = new Command({
     name: "Release Problem",
     description: "Immediately release a problem. Note that the schedule still continues as usual.",
     exec: forceReleaseProblem,
-    aliases: ["releaseproblem"]
+    aliases: ["releaseproblem"],
+    buildSlash
 });
 
 export default commandReleaseProblem;

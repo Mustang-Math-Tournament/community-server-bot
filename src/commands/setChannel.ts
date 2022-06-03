@@ -1,6 +1,7 @@
 
 // Set the channel where the bot takes admin commands.
 
+import { SlashCommandBuilder, SlashCommandSubcommandBuilder } from "@discordjs/builders";
 import { GuildChannel, Message, Permissions } from "discord.js";
 import { Command } from "../Command";
 import { setSetting } from "../settings";
@@ -49,26 +50,43 @@ async function setChannel(msg: Message, text: string, type: ChannelType) {
     msg.channel.send(`Set \`${resChannel.name}\` to be the ${type} channel.`);
 }
 
+function buildAdminSlash() {
+    return new SlashCommandSubcommandBuilder();
+}
+
 const cmdSetAdminChannel = new Command({
     name: "Set Admin Channel",
     description: "Set the admin channel.",
     aliases: ["admin"],
-    exec: (msg, text) => setChannel(msg, text, "admin")
+    exec: (msg, text) => setChannel(msg, text, "admin"),
+    isSubcommand: true,
+    buildSlash: buildAdminSlash
 });
+
+function buildAnnounceSlash() {
+    return new SlashCommandSubcommandBuilder();
+}
 
 const cmdSetAnnounceChannel = new Command({
     name: "Set Announce Channel",
     description: "Set the announce channel.",
     aliases: ["announce"],
-    exec: (msg, text) => setChannel(msg, text, "announce")
+    exec: (msg, text) => setChannel(msg, text, "announce"),
+    isSubcommand: true,
+    buildSlash: buildAnnounceSlash
 });
+
+function buildSlash() {
+    return new SlashCommandBuilder();
+}
 
 const commandSetChannel = new Command({
     name: "Set Admin Channel",
     description: "Sets the special channels in the server. Arguments: `admin`, `announce`",
     aliases: ["setchannel"],
     exec: (msg, text) => msg.channel.send("Please use `admin` or `announce` to set the respective channel ids."),
-    subcommands: [cmdSetAdminChannel, cmdSetAnnounceChannel]
+    subcommands: [cmdSetAdminChannel, cmdSetAnnounceChannel],
+    buildSlash
 });
 
 export default commandSetChannel;

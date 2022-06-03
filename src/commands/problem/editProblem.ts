@@ -1,6 +1,8 @@
 
 // Edit a problem given its id.
+// TODO: support slash commands
 
+import { SlashCommandBuilder } from "@discordjs/builders";
 import { Message } from "discord.js";
 import { verifyAdmin } from "../../checkPermissions";
 import { Command } from "../../Command";
@@ -32,11 +34,16 @@ function execEditProblem(msg: Message, text: string) {
     setUser(userId, { step: "question", channel: msg.channel.id, problem: problem, toAdd: false });
 }
 
+function buildSlash() {
+    return new SlashCommandBuilder();
+}
+
 const commandEditProblem = new Command({
     name: "Edit Problem",
     description: "Edits a problem given its id",
     aliases: ["editproblem"],
-    exec: execEditProblem
+    exec: execEditProblem,
+    buildSlash
 });
 
 export default commandEditProblem;

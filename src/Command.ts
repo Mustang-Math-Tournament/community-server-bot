@@ -8,6 +8,7 @@ import { SlashCommandBuilder, SlashCommandSubcommandBuilder, SlashCommandSubcomm
 
 type AnyCommandBuilder = SlashCommandBuilder | SlashCommandSubcommandBuilder | SlashCommandSubcommandGroupBuilder;
 
+// TODO: use generics to determine if subcommand
 interface CommandOptions {
     name: string; // Name of the command.
     description: string; // Description of the command.
@@ -25,7 +26,7 @@ interface CommandOptions {
     listens?: boolean; // Whether or not this command listens to all sent messages. Default false.
     listenExec?: (msg: Message) => any; // Function that executes on every message while listening.
 
-    buildSlash: () => AnyCommandBuilder; // Function that builds a slash command. Name and description are automatically set.
+    buildSlash: () => AnyCommandBuilder; // Function that builds a slash command. Name, description, and subcommands are automatically set.
 }
 
 export class Command {
@@ -96,10 +97,20 @@ export class Command {
         if (this.listens) this.listenExec(msg);
     }
 
-    // Get the full slash command including name + description.
+    // Get the full slash command including name + description + subcommands.
     getSlash() {
         const built = this.buildSlash();
         built.setName(this.name).setDescription(this.description);
+
+        if (built instanceof SlashCommandBuilder) { // not a subcommand
+            for (const subcommand of this.subcommands) {
+                const subSlash = subcommand.getSlash();
+                if (subSlash instanceof SlashCommandSubcommandBuilder) {
+                    built.addSubcommand(subSlash);
+                }
+            }
+        }
+        
         return built;
     }
 }

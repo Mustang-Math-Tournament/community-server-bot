@@ -1,6 +1,8 @@
 
 // List the current problems in the queue.
+// TODO: support slash commands
 
+import { SlashCommandBuilder } from "@discordjs/builders";
 import { Message } from "discord.js";
 import { verifyAdmin } from "../../checkPermissions";
 import { Command } from "../../Command";
@@ -45,11 +47,16 @@ function listProblems(msg: Message, text: string) {
     });
 }
 
+function buildSlash() {
+    return new SlashCommandBuilder();
+}
+
 const commandListProblems = new Command({
     name: "List Problems",
     description: "List problems currently in the queue.",
     aliases: ["listproblems"],
-    exec: listProblems
+    exec: listProblems,
+    buildSlash
 });
 
 export default commandListProblems;

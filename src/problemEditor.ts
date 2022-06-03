@@ -2,6 +2,7 @@
 // Procedure to edit problems.
 // This is created as a command, but that's only to make it convenient to listen.
 
+import { SlashCommandSubcommandBuilder } from "@discordjs/builders";
 import { Message } from "discord.js";
 import { Command } from "./Command";
 import { Problem } from "./Problem";
@@ -60,13 +61,19 @@ function listen(msg: Message) {
     }
 }
 
+function buildSlash() {
+    // workaround: make it a subcommand so it isn't added to the command list
+    return new SlashCommandSubcommandBuilder();
+}
+
 const fakeEditorCommand = new Command({
     name: "Problem Editor",
     description: "A fake listening command that allows editing of problems.",
     aliases: [],
     exec: (()=>{}),
     listens: true,
-    listenExec: listen
+    listenExec: listen,
+    buildSlash
 });
 
 export default fakeEditorCommand;

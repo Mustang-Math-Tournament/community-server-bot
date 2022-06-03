@@ -1,6 +1,8 @@
 
 // Set the schedule of a server.
+// TODO: support slash commands
 
+import { SlashCommandBuilder } from "@discordjs/builders";
 import { Message } from "discord.js";
 import { verifyAdmin } from "../checkPermissions";
 import { Command } from "../Command";
@@ -33,11 +35,16 @@ function setSchedule(msg: Message, text: string) {
     setScheduler(msg.client, msg.guild.id);
 }
 
+function buildSlash() {
+    return new SlashCommandBuilder();
+}
+
 const commandSetSchedule = new Command({
     name: "Set Schedule",
     description: "Set the problem release schedule for this server.",
     aliases: ["setschedule"],
-    exec: setSchedule
+    exec: setSchedule,
+    buildSlash
 });
 
 export default commandSetSchedule;

@@ -1,6 +1,8 @@
 
 // Remove a problem.
+// TODO: support slash commands
 
+import { SlashCommandBuilder } from "@discordjs/builders";
 import { Message } from "discord.js";
 import { verifyAdmin } from "../../checkPermissions";
 import { Command } from "../../Command";
@@ -23,11 +25,16 @@ function execRemoveProblem(msg: Message, text: string) {
     msg.channel.send("Successfully removed problem.");
 }
 
+function buildSlash() {
+    return new SlashCommandBuilder();
+}
+
 const commandRemoveProblem = new Command({
     name: "Remove Problem",
     description: "Remove a problem from the queue by id.",
     aliases: ["removeproblem"],
-    exec: execRemoveProblem
+    exec: execRemoveProblem,
+    buildSlash
 });
 
 export default commandRemoveProblem;

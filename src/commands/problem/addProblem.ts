@@ -37,7 +37,7 @@ const commandAddProblem = new Command({
     description: "Add a new Problem of the Day to the queue.",
     aliases: ["addproblem"],
     exec: execAddProblem,
-    buildSlash: buildSlash
+    buildSlash
 });
 
 export default commandAddProblem;

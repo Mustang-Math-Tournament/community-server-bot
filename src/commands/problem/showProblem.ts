@@ -1,6 +1,8 @@
 
 // Command to show a problem given the ID, or show the current problem.
+// TODO: support slash commands
 
+import { SlashCommandBuilder } from "@discordjs/builders";
 import { Message } from "discord.js";
 import { verifyAdmin } from "../../checkPermissions";
 import { Command } from "../../Command";
@@ -39,11 +41,16 @@ function showProblem(msg: Message, text: string) {
     msg.channel.send(problem.createMessage());
 }
 
+function buildSlash() {
+    return new SlashCommandBuilder();
+}
+
 const commandShowProblem = new Command({
     name: "Show Problem",
     description: "Show a problem, with an id if given, or the first problem otherwise.",
     aliases: ["showproblem"],
-    exec: showProblem
+    exec: showProblem,
+    buildSlash
 });
 
 export default commandShowProblem;
