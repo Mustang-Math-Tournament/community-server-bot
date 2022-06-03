@@ -10,6 +10,7 @@ import commandList from "./src/commandList";
 import { clientId, token } from "./config.json";
 import { REST } from "@discordjs/rest";
 import { Routes, RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v9";
+import { SlashCommandBuilder } from "@discordjs/builders";
 
 const args = Minimist(process.argv);
 
@@ -25,8 +26,10 @@ Run `npm run publish -- --global` to globally publish commands (NOT RECOMMENDED 
     const commandsJSON: RESTPostAPIApplicationCommandsJSONBody[] = [];
 
     for (const command of commandList) {
-        const slashCommandJSON = command.getSlash().toJSON();
-        commandsJSON.push(slashCommandJSON);
+        const slashCommand = command.getSlash();
+        if (slashCommand instanceof SlashCommandBuilder) { // must not be subcommand
+            commandsJSON.push(slashCommand.toJSON());
+        }
     }
 
     const rest = new REST({ version: "9" }).setToken(token);

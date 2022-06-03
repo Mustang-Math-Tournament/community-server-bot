@@ -4,13 +4,16 @@
 // Commands are case insensitive.
 
 import { Message } from "discord.js";
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder } from "@discordjs/builders";
+
+type AnyCommandBuilder = SlashCommandBuilder | SlashCommandSubcommandBuilder | SlashCommandSubcommandGroupBuilder;
 
 interface CommandOptions {
     name: string; // Name of the command.
     description: string; // Description of the command.
     aliases: string[]; // List of names that can be used to call the command.
     subcommands?: Command[]; // Subcommands for this command.
+    isSubcommand?: boolean; // Whether or not this command is a subcommand. Default false.
 
     // Function that is executed when command is called and it doesn't match a subcommand.
     // msg is the Message object of the sent command, text is the remaining part of the command.
@@ -21,25 +24,33 @@ interface CommandOptions {
 
     listens?: boolean; // Whether or not this command listens to all sent messages. Default false.
     listenExec?: (msg: Message) => any; // Function that executes on every message while listening.
+
+    createSlash: () => AnyCommandBuilder; // Function that creates a slash command.
 }
 
 export class Command {
     name: string;
+    description: string;
     aliases: string[];
     subcommands: Command[];
+    isSubcommand: boolean;
     exec: (msg: Message, text: string) => any;
     needsArgs: boolean;
     listens: boolean;
     listenExec: (msg: Message) => any;
+    getSlash: () => AnyCommandBuilder;
 
     constructor(opts: CommandOptions) {
         this.name = opts.name;
+        this.description = opts.description;
         this.aliases = opts.aliases.map(x => x.toLowerCase()); // case insensitive
         this.subcommands = opts.subcommands ?? [];
+        this.isSubcommand = opts.isSubcommand ?? false;
         this.exec = opts.exec;
         this.needsArgs = opts.needsArgs ?? false;
         this.listens = opts.listens ?? false;
         this.listenExec = opts.listenExec ?? (()=>{});
+        this.getSlash = opts.createSlash;
     }
 
     // Checks if text is a valid form of this command.
@@ -83,10 +94,5 @@ export class Command {
             subcommand.checkListen(msg);
         }
         if (this.listens) this.listenExec(msg);
-    }
-
-    // Get the slash command for registration.
-    getSlash() {
-        return new SlashCommandBuilder(); // TODO: actually create it
     }
 }
