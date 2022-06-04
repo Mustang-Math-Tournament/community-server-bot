@@ -9,7 +9,7 @@ import Schedule from "node-schedule";
 let scheduledJobs: { [key: string]: Schedule.Job } = {};
 
 async function errorInAdminChannel(client: Client, guildId: string, err: string) {
-    const adminChannelId = getSetting(guildId, "adminChannelId") as string | undefined;
+    const adminChannelId = getSetting(guildId, "channels", "admin") as string | undefined;
     if (!adminChannelId) return;
     const channel = await client.channels.fetch(adminChannelId);
     if (!channel || !channel.isText()) return;
@@ -35,7 +35,7 @@ export async function releaseProblem(client: Client, guildId: string) {
         await errorInAdminChannel(client, guildId, "Warning: There is no problem in the queue for tomorrow!");
     }
 
-    const announceChannelId = getSetting(guildId, "announceChannelId") as string | undefined;
+    const announceChannelId = getSetting(guildId, "channels", "announce") as string | undefined;
     if (!announceChannelId) {
         await errorInAdminChannel(client, guildId, "Error: There is no announcement channel set for this server!");
         return;
