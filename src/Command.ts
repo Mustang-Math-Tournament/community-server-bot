@@ -1,37 +1,40 @@
 
 // See https://discord.com/developers/docs/interactions/application-commands#subcommands-and-subcommand-groups for how the layout works.
 
-import { SlashCommandBuilder, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder } from "@discordjs/builders";
+import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v9";
 import { CommandInteraction } from "discord.js";
 
 interface CommandOptions {
+    name: string; // Name of the command - must be same as slash
     subcommands?: Subcommand[];
     subcommandGroups?: SubcommandGroup[];
-    exec?: (inter: CommandInteraction) => void; // Function to execute without subcommands
-    slash: SlashCommandBuilder; // The slash command representing this command. This must already have subcommands+groups added to it.
+    exec?: (inter: CommandInteraction) => Promise<void>; // Function to execute without subcommands
+    slashJSON: RESTPostAPIApplicationCommandsJSONBody; // The slash command representing this command, converted to JSON
 }
 
 export class Command {
+    name: string;
     subcommands: Subcommand[];
     subcommandGroups: SubcommandGroup[];
-    exec?: (inter: CommandInteraction) => void; // this is ignored if there are subcommands
-    slash: SlashCommandBuilder;
+    exec?: (inter: CommandInteraction) => Promise<void>; // this is ignored if there are subcommands
+    slashJSON: RESTPostAPIApplicationCommandsJSONBody;
 
     constructor(opts: CommandOptions) {
-        this.slash = opts.slash;
+        this.name = opts.name;
+        this.slashJSON = opts.slashJSON;
         this.exec = opts.exec;
         this.subcommands = opts.subcommands ?? [];
         this.subcommandGroups = opts.subcommandGroups ?? [];
     }
 
-    checkExecute(inter: CommandInteraction) {
-        if (inter.commandName !== this.slash.name) return;
+    async checkExecute(inter: CommandInteraction) {
+        if (inter.commandName !== this.name) return;
 
         const subcommandGroupName = inter.options.getSubcommandGroup();
         if (subcommandGroupName) {
             for (const cmdGroup of this.subcommandGroups) {
-                if (cmdGroup.slash.name === subcommandGroupName) {
-                    cmdGroup.checkExecute(inter);
+                if (cmdGroup.name === subcommandGroupName) {
+                    await cmdGroup.checkExecute(inter);
                     return;
                 }
             }
@@ -41,8 +44,8 @@ export class Command {
         const subcommandName = inter.options.getSubcommand();
         if (subcommandName) {
             for (const cmd of this.subcommands) {
-                if (cmd.slash.name === subcommandName) {
-                    cmd.exec(inter);
+                if (cmd.name === subcommandName) {
+                    await cmd.exec(inter);
                     return;
                 }
             }
@@ -50,52 +53,52 @@ export class Command {
         }
 
         if (!this.exec) {
-            throw "No execute function on command "+this.slash.name;
+            throw "No execute function on command "+this.name;
         }
 
-        this.exec(inter);
+        await this.exec(inter);
     }
 }
 
 interface SubcommandOptions {
-    exec: (inter: CommandInteraction) => void;
-    slash: SlashCommandSubcommandBuilder;
+    name: string;
+    exec: (inter: CommandInteraction) => Promise<void>;
 }
 
 export class Subcommand {
-    exec: (inter: CommandInteraction) => void;
-    slash: SlashCommandSubcommandBuilder;
+    name: string;
+    exec: (inter: CommandInteraction) => Promise<void>;
 
     constructor(opts: SubcommandOptions) {
-        this.slash = opts.slash;
-        this.exec = opts.exec ?? (() => {});
+        this.name = opts.name;
+        this.exec = opts.exec ?? (async () => {});
     }
 }
 
 interface SubcommandGroupOptions {
-    slash: SlashCommandSubcommandGroupBuilder;
+    name: string;
     subcommands: Subcommand[];
 }
 
 export class SubcommandGroup {
+    name: string;
     subcommands: Subcommand[];
-    slash: SlashCommandSubcommandGroupBuilder;
 
     constructor(opts: SubcommandGroupOptions) {
-        this.slash = opts.slash;
+        this.name = opts.name;
         this.subcommands = opts.subcommands;
     }
 
-    checkExecute(inter: CommandInteraction) {
+    async checkExecute(inter: CommandInteraction) {
         const subcommandName = inter.options.getSubcommand();
         if (subcommandName) {
             for (const cmd of this.subcommands) {
-                if (cmd.slash.name === subcommandName) {
-                    cmd.exec(inter);
+                if (cmd.name === subcommandName) {
+                    await cmd.exec(inter);
                     return;
                 }
             }
-            throw "No subcommand with name "+subcommandName+" in group "+this.slash.name;
+            throw "No subcommand with name "+subcommandName+" in group "+this.name;
         }
         throw "Somehow trying to execute a subcommand group";
     }

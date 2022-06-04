@@ -15,16 +15,7 @@ import commandSetSchedule from "./commands/setSchedule";
 import commandReleaseProblem from "./commands/releaseProblem";
 
 let commandList: Command[] = [
-    commandAddProblem,
     commandEcho,
-    commandEditProblem,
-    commandListProblems,
-    commandReleaseProblem,
-    commandRemoveProblem,
-    commandSetChannel,
-    commandSetSchedule,
-    commandShowProblem,
-    fakeEditorCommand,
 ];
 
 export default commandList;
