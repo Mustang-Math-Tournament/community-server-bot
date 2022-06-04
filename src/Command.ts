@@ -30,7 +30,7 @@ export class Command {
     async checkExecute(inter: CommandInteraction) {
         if (inter.commandName !== this.name) return;
 
-        const subcommandGroupName = inter.options.getSubcommandGroup();
+        const subcommandGroupName = inter.options.getSubcommandGroup(false);
         if (subcommandGroupName) {
             for (const cmdGroup of this.subcommandGroups) {
                 if (cmdGroup.name === subcommandGroupName) {
@@ -41,7 +41,7 @@ export class Command {
             throw "No subcommand group with name "+subcommandGroupName;
         }
 
-        const subcommandName = inter.options.getSubcommand();
+        const subcommandName = inter.options.getSubcommand(false);
         if (subcommandName) {
             for (const cmd of this.subcommands) {
                 if (cmd.name === subcommandName) {
@@ -90,7 +90,7 @@ export class SubcommandGroup {
     }
 
     async checkExecute(inter: CommandInteraction) {
-        const subcommandName = inter.options.getSubcommand();
+        const subcommandName = inter.options.getSubcommand(false);
         if (subcommandName) {
             for (const cmd of this.subcommands) {
                 if (cmd.name === subcommandName) {
