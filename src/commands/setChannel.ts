@@ -3,36 +3,26 @@
 
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { ChannelType } from "discord-api-types/v9";
-import { CommandInteraction, GuildBasedChannel } from "discord.js";
+import { CommandInteraction } from "discord.js";
 import { Command } from "../Command";
 import { setSetting } from "../settings";
+import { Permissions } from "discord.js";
 
 const CHANNEL_TYPES = ["admin", "announce"];
 export type SpecialChannelType = (typeof CHANNEL_TYPES)[number]; // convert to union
 
 async function setChannel(inter: CommandInteraction) {
-    if (!inter.member || !inter.guild || !inter.channel?.isText()) {
+    if (!inter.inCachedGuild() || !inter.channel) {
         await inter.reply({ content: "You can only run this command in a server text channel.", ephemeral: true });
         return;
     }
 
-    /*if (!msg.member.permissions.has(Permissions.FLAGS.MANAGE_GUILD)) {
-        msg.channel.send("You must have the Manage Server permission to run this command.");
+    if (!inter.member.permissions.has(Permissions.FLAGS.MANAGE_GUILD)) {
+        await inter.reply({ content: "You must have the Manage Server permission to run this command.", ephemeral: true });
         return;
-    }*/ // TODO: relegate permissions check to slash command
-
-    const apiChannel = inter.options.getChannel("channel", true);
-    let resChannel: GuildBasedChannel;
-    if ("permissions" in apiChannel) { // need to check if it's the raw API data
-        const fetchedChannel = await inter.client.channels.fetch(apiChannel.id) as GuildBasedChannel;
-        if (!fetchedChannel) {
-            await inter.reply({ content: "You can only run this command in a server text channel.", ephemeral: true });
-            return;
-        }
-        resChannel = fetchedChannel;
-    } else {
-        resChannel = apiChannel;
     }
+
+    const resChannel = inter.options.getChannel("channel", true);
 
     if (!resChannel.isText()) {
         await inter.reply({ content: "Channel must be a text channel.", ephemeral: true });

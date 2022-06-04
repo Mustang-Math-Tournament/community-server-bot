@@ -13,11 +13,11 @@ client.once("ready", async () => {
     console.log("Ready!");
 });
 
-client.on("interactionCreate", interaction => {
+client.on("interactionCreate", async interaction => {
     if (!interaction.isCommand()) return;
 
     for (const cmd of commandList) {
-        cmd.checkExecute(interaction);
+        await cmd.checkExecute(interaction);
     }
 });
 
