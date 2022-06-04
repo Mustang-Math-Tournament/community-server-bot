@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, writeFileSync } from "fs";
-import { SpecialChannelType } from "./commands/setChannel";
+import { SpecialChannelType } from "../commands/setChannel";
 import nodeCleanup from "node-cleanup";
 
 const FILE_PATH = "./stored/guildsettings.json";

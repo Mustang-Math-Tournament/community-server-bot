@@ -1,7 +1,7 @@
 
 // Contains the logic for storing problems.
 
-import { Problem, ProblemOptions } from "./Problem";
+import { Problem, ProblemOptions } from "../Problem";
 import fs from "fs";
 import nodeCleanup from "node-cleanup";
 

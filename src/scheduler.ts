@@ -2,8 +2,8 @@
 // Schedules and executes the release of the problem.
 
 import { Client } from "discord.js";
-import { getShown, getTopProblem, removeTopProblem, setShown } from "./problemQueue";
-import { getSetting } from "./settings";
+import { getShown, getTopProblem, removeTopProblem, setShown } from "./stores/problemQueue";
+import { getSetting } from "./stores/settings";
 import Schedule from "node-schedule";
 
 let scheduledJobs: { [key: string]: Schedule.Job } = {};

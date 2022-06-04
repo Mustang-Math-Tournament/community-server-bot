@@ -5,7 +5,7 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import { ChannelType } from "discord-api-types/v9";
 import { CommandInteraction } from "discord.js";
 import { Command } from "../Command";
-import { setSetting } from "../settings";
+import { setSetting } from "../stores/settings";
 import { Permissions } from "discord.js";
 
 const CHANNEL_TYPES = ["admin", "announce"];
