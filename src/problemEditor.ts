@@ -6,7 +6,7 @@ import { SlashCommandSubcommandBuilder } from "@discordjs/builders";
 import { Message } from "discord.js";
 import { Command } from "./Command";
 import { Problem } from "./Problem";
-import { addProblem } from "./problemQueue";
+import { addProblem } from "./stores/problemQueue";
 
 type ProblemStep = "question" | "answer";
 
@@ -60,19 +60,3 @@ function listen(msg: Message) {
             break;
     }
 }
-
-function buildSlash() {
-    // workaround: make it a subcommand so it isn't added to the command list
-    return new SlashCommandSubcommandBuilder();
-}
-
-const fakeEditorCommand = new Command({
-    name: "problemeditor",
-    description: "A fake listening command that allows editing of problems.",
-    exec: (()=>{}),
-    listens: true,
-    listenExec: listen,
-    buildSlash
-});
-
-export default fakeEditorCommand;

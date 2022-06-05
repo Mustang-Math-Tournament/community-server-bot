@@ -1,8 +1,8 @@
 
 // pagination stolen from another one of my projects
 
-import Discord = require("discord.js");
-import nodeCleanup = require("node-cleanup");
+import Discord from "discord.js";
+import nodeCleanup from "node-cleanup";
 
 const emojis = ["⏪","◀️","▶️","⏩"];
 
@@ -144,4 +144,4 @@ function removeInteractions() {
 
 nodeCleanup(removeInteractions);
 
-export = Pagination;
+export default Pagination;

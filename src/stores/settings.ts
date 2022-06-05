@@ -1,12 +1,11 @@
 import { existsSync, readFileSync, writeFileSync } from "fs";
-import { SpecialChannelType } from "../commands/setChannel";
 import nodeCleanup from "node-cleanup";
 
 const FILE_PATH = "./stored/guildsettings.json";
 
 interface GuildSettings {
     channels?: {
-        [key: SpecialChannelType]: string;
+        [key: string]: string;
     }
     schedule?: [number, number];
 }
@@ -27,7 +26,7 @@ function saveSettings() {
 export function getSetting(guildId: string, ...settingList: string[]) {
     if (!settings[guildId]) return undefined;
     let curLevel: any = settings[guildId];
-    for (const s in settingList) {
+    for (const s of settingList) {
         curLevel = curLevel[s];
         if (!curLevel) return undefined;
     }
@@ -46,4 +45,5 @@ export function setSetting(guildId: string, value: any, ...settingList: string[]
     curLevel[settingList[settingList.length-1]] = value;
 }
 
+loadSettings();
 nodeCleanup(saveSettings);

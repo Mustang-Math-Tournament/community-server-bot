@@ -9,7 +9,7 @@ import { setSetting } from "../stores/settings";
 import { Permissions } from "discord.js";
 
 const CHANNEL_TYPES = ["admin", "announce"];
-export type SpecialChannelType = (typeof CHANNEL_TYPES)[number]; // convert to union
+type SpecialChannelType = (typeof CHANNEL_TYPES)[number]; // convert to union
 
 async function setChannel(inter: CommandInteraction) {
     if (!inter.inCachedGuild() || !inter.channel) {

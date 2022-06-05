@@ -1,6 +1,5 @@
 
 // Example command. Echoes the arguments to the command back.
-// TODO: support slash commands
 
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";

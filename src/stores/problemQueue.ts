@@ -8,10 +8,12 @@ import nodeCleanup from "node-cleanup";
 const FILE_PATH = "./stored/problemqueue.json";
 
 let problemQueue: Problem[] = [];
+let unfinishedProblems: Problem[] = [];
 let shownProblem: Problem | null = null;
 
 interface ProblemSave {
     problemQueue: ProblemOptions[];
+    unfinishedProblems: ProblemOptions[];
     shownProblem: ProblemOptions | null;
 }
 
@@ -19,7 +21,8 @@ interface ProblemSave {
 export function loadProblems() {
     if (fs.existsSync(FILE_PATH)) {
         const problemJSON = JSON.parse(fs.readFileSync(FILE_PATH, "utf8")) as ProblemSave;
-        problemQueue.push(...problemJSON.problemQueue.map(x => new Problem(x)));
+        if (problemJSON.problemQueue) problemQueue.push(...problemJSON.problemQueue.map(x => new Problem(x)));
+        if (problemJSON.unfinishedProblems) unfinishedProblems.push(...problemJSON.unfinishedProblems.map(x => new Problem(x)));
         shownProblem = problemJSON.shownProblem ? new Problem(problemJSON.shownProblem) : null;
     }
 }
@@ -28,6 +31,7 @@ export function loadProblems() {
 function saveProblems() {
     fs.writeFileSync(FILE_PATH, JSON.stringify({
         problemQueue,
+        unfinishedProblems,
         shownProblem
     }));
     console.log("Saved problems");
@@ -55,9 +59,11 @@ export function getProblem(id: number) {
     return problemQueue.find(x => x.id === id);
 }
 
-// Remove problem by id
+// Remove problem by id, returns the first removed problem (if any)
 export function removeProblem(id: number) {
+    const ret = getProblem(id);
     problemQueue = problemQueue.filter(x => x.id !== id);
+    return ret;
 }
 
 export function isValidProblemId(id: string | number) {
@@ -87,4 +93,33 @@ export function problemQueueSize() {
     return problemQueue.length;
 }
 
+// unfinished problem queue functions
+
+export function getUnfinished(id: number) {
+    return unfinishedProblems.find(x => x.id === id);
+}
+
+export function addUnfinished(p: Problem) {
+    unfinishedProblems.push(p);
+}
+
+export function removeUnfinished(id: number) {
+    unfinishedProblems = unfinishedProblems.filter(x => x.id !== id);
+}
+
+// make a problem finished and add it to the problem queue
+export function finalize(id: number) {
+    const pb = getUnfinished(id);
+    if (!pb) throw "Problem with id "+id+" not found";
+    removeUnfinished(id);
+    addProblem(pb);
+}
+
+export function unfinalize(id: number) {
+    const pb = removeProblem(id);
+    if (!pb) throw "Problem with id "+id+" not found";
+    addUnfinished(pb);
+}
+
+loadProblems();
 nodeCleanup(saveProblems);
