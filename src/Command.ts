@@ -63,30 +63,36 @@ export class Command {
 interface SubcommandOptions {
     name: string;
     exec: (inter: CommandInteraction) => Promise<void>;
+    slash?: any;
 }
 
 export class Subcommand {
     name: string;
     exec: (inter: CommandInteraction) => Promise<void>;
+    slash?: any; // any since slash command builders have weird typings. just use "as" to cast
 
     constructor(opts: SubcommandOptions) {
         this.name = opts.name;
         this.exec = opts.exec ?? (async () => {});
+        this.slash = opts.slash;
     }
 }
 
 interface SubcommandGroupOptions {
     name: string;
     subcommands: Subcommand[];
+    slash?: any;
 }
 
 export class SubcommandGroup {
     name: string;
     subcommands: Subcommand[];
+    slash?: any; // any since slash command builders have weird typings. just use "as" to cast
 
     constructor(opts: SubcommandGroupOptions) {
         this.name = opts.name;
         this.subcommands = opts.subcommands;
+        this.slash = opts.slash;
     }
 
     async checkExecute(inter: CommandInteraction) {

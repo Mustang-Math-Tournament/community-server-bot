@@ -5,11 +5,13 @@
 import { Command } from "./Command";
 import commandAddProblem from "./commands/problem/addProblem";
 import commandEcho from "./commands/echo";
+import commandEditProblem from "./commands/problem/editProblem";
 import commandSetChannel from "./commands/setChannel";
 
 let commandList: Command[] = [
     commandAddProblem,
     commandEcho,
+    commandEditProblem,
     commandSetChannel,
 ];
 

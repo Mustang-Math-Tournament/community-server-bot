@@ -17,7 +17,7 @@ async function setChannel(inter: CommandInteraction) {
         return;
     }
 
-    if (!inter.member.permissions.has(Permissions.FLAGS.MANAGE_GUILD)) {
+    if (!inter.member.permissions.has(Permissions.FLAGS.MANAGE_GUILD) && !inter.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR) && inter.member.id !== inter.guild.ownerId) {
         await inter.reply({ content: "You must have the Manage Server permission to run this command.", ephemeral: true });
         return;
     }
