@@ -1,10 +1,10 @@
 
 // Add problem command.
 
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { SlashCommandSubcommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
 import { verifyAdmin } from "../../checkPermissions";
-import { Command } from "../../Command";
+import { Subcommand } from "../../Command";
 import { Problem } from "../../Problem";
 import { addUnfinished } from "../../stores/problemQueue";
 
@@ -16,14 +16,12 @@ async function execAddProblem(inter: CommandInteraction) {
     inter.reply("Created a new problem with id `"+newProblem.id+"`. Edit it with /editproblem.");
 }
 
-const slash = new SlashCommandBuilder()
-    .setName("addproblem")
+const slash = new SlashCommandSubcommandBuilder()
+    .setName("add")
     .setDescription("Add a new problem.")
 
-const commandAddProblem = new Command({
-    name: "addproblem",
+export const commandAdd = new Subcommand({
+    name: "add",
     exec: execAddProblem,
-    slashJSON: slash.toJSON()
+    slash: slash
 });
-
-export default commandAddProblem;

@@ -1,20 +1,20 @@
 
 // Edit a problem given its id.
 
-import { SlashCommandBuilder } from "@discordjs/builders";
-import { Command } from "../../Command";
+import { SlashCommandSubcommandGroupBuilder } from "@discordjs/builders";
+import { SubcommandGroup } from "../../Command";
 import commandQuestion from "./edit/question";
 import commandAnswer from "./edit/answer";
 
-const slash = new SlashCommandBuilder()
-    .setName("editproblem")
+const slash = new SlashCommandSubcommandGroupBuilder()
+    .setName("edit")
     .setDescription("Edit a problem.")
     .addSubcommand(commandQuestion.slash)
     .addSubcommand(commandAnswer.slash);
 
-const commandEditProblem = new Command({
-    name: "editproblem",
-    slashJSON: slash.toJSON(),
+const commandEditProblem = new SubcommandGroup({
+    name: "edit",
+    slash: slash,
     subcommands: [commandQuestion, commandAnswer]
 });
 
