@@ -6,17 +6,17 @@ import { SlashCommandSubcommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
 import { verifyAdmin } from "../../checkPermissions";
 import { Subcommand } from "../../Command";
-import { finalize, getProblem, getUnfinished } from "../../stores/problemQueue";
+import { getProblem, getUnfinished, unfinalize } from "../../stores/problemQueue";
 
 async function exec(inter: CommandInteraction) {
     if (!verifyAdmin(inter, true)) return;
 
     const problemId = inter.options.getInteger("problemid", true);
-    const problemObj = getUnfinished(problemId);
+    const problemObj = getProblem(problemId);
     if (!problemObj) {
         let content: string;
-        if (getProblem(problemId)) { // already finalized
-            content = "This problem is already finished. Use `/problem unfinish` to unfinalize it."; // TODO: add unfinalize
+        if (getUnfinished(problemId)) {
+            content = "This problem is not yet finished. Use `/problem finish` to finalize it."; // TODO: add unfinalize
         } else {
             content = "No problems exist with this id.";
         }
@@ -24,20 +24,20 @@ async function exec(inter: CommandInteraction) {
         return;
     }
 
-    finalize(problemId);
-    await inter.reply({ content: `Finalized problem ${problemId} and added it to the queue.` });
+    unfinalize(problemId);
+    await inter.reply({ content: `Unfinalized problem ${problemId} and removed it from the queue.` });
 }
 
 const slash = new SlashCommandSubcommandBuilder()
-    .setName("finish")
-    .setDescription("Finish a problem and add it to the queue.")
+    .setName("unfinish")
+    .setDescription("Unfinish a problem and remove it from the queue.")
     .addIntegerOption(opt => opt
         .setName("problemid")
-        .setDescription("The id of the problem to finish.")
+        .setDescription("The id of the problem to unfinish.")
         .setRequired(true));
 
-export const commandFinish = new Subcommand({
-    name: "finish",
+export const commandUnfinish = new Subcommand({
+    name: "unfinish",
     exec,
     slash
 });
