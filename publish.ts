@@ -7,19 +7,27 @@
 
 import Minimist from "minimist";
 import commandList from "./src/commandList";
-import { clientId, token } from "./config.json";
+import ConfigType from "./src/Config";
+import configJSON from "./config.json";
 import { REST } from "@discordjs/rest";
 import { Routes, RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v9";
 
+const config: ConfigType = configJSON;
+
+if (!config.token || !config.clientId) {
+    throw "You haven't configured the token or client ID!";
+}
+
 const args = Minimist(process.argv, { string: "guild" });
 
-if (!args.guild && !args.global) {
+if (!args.guild && !args.global && !config.publishGuild) {
     console.log("Run `npm run publish -- --guild=<GUILD ID>` to publish commands to a certain guild.\n\
-Run `npm run publish -- --global` to globally publish commands (NOT RECOMMENDED FOR DEVELOPMENT).");
+Run `npm run publish -- --global` to globally publish commands (NOT RECOMMENDED FOR DEVELOPMENT).\n\
+If you add the guild id to the config with key publishGuild, you can run `npm run publish` to publish to that guild.");
 } else {
     let guildId: string | null = null;
-    if (args.guild) {
-        guildId = args.guild;
+    if (args.guild || (!args.global && config.publishGuild)) {
+        guildId = args.guild || config.publishGuild;
         console.log("Adding to guild", guildId);
     } // else global
 
@@ -29,13 +37,13 @@ Run `npm run publish -- --global` to globally publish commands (NOT RECOMMENDED 
         commandsJSON.push(command.slashJSON);
     }
 
-    const rest = new REST({ version: "9" }).setToken(token);
+    const rest = new REST({ version: "9" }).setToken(config.token);
     
     async function sendCommands() {
         try {
             console.log("Started refreshing slash commands.");
 
-            const route = guildId ? Routes.applicationGuildCommands(clientId, guildId) : Routes.applicationCommands(clientId);
+            const route = guildId ? Routes.applicationGuildCommands(config.clientId, guildId) : Routes.applicationCommands(config.clientId);
             await rest.put(
                 route,
                 { body: commandsJSON }
