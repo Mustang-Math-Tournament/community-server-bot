@@ -10,6 +10,7 @@ import { commandFinish } from "./finish";
 import { commandUnfinish } from "./unfinish";
 import { commandList } from "./list";
 import { commandRemove } from "./remove";
+import { commandRelease } from "./release";
 
 const slash = new SlashCommandBuilder()
     .setName("problem")
@@ -19,12 +20,13 @@ const slash = new SlashCommandBuilder()
     .addSubcommand(commandFinish.slash)
     .addSubcommand(commandUnfinish.slash)
     .addSubcommand(commandRemove.slash)
+    .addSubcommand(commandRelease.slash)
     .addSubcommandGroup(commandEdit.slash)
     .addSubcommandGroup(commandList.slash);
 
 export const commandProblem = new Command({
     name: "problem",
     slashJSON: slash.toJSON(),
-    subcommands: [commandAdd, commandView, commandFinish, commandUnfinish, commandRemove],
+    subcommands: [commandAdd, commandView, commandFinish, commandUnfinish, commandRemove, commandRelease],
     subcommandGroups: [commandEdit, commandList]
 });
