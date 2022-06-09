@@ -1,25 +1,20 @@
-import { Channel, GuildChannel, Message, PartialDMChannel } from "discord.js";
-import { getSetting } from "./settings";
-
-export function isAdmin(channel: Channel | PartialDMChannel) {
-    if (!(channel instanceof GuildChannel)) return false;
-    return getSetting(channel.guildId, "adminChannelId") === channel.id;
-}
+import { CommandInteraction } from "discord.js";
+import { getSetting } from "./stores/settings";
 
 // Verifies if a message is sent in a guild channel.
 // Sends the error message if sendError is true
-export function verifyAdmin(msg: Message, sendError: boolean) {
-    if (!msg.guild) {
-        if (sendError) msg.channel.send("You can only run this command in a server.");
+export function verifyAdmin(inter: CommandInteraction, sendError: boolean): inter is CommandInteraction<"cached"> {
+    if (!inter.inCachedGuild()) {
+        if (sendError) inter.reply({ content: "You can only run this command in a server.", ephemeral: true });
         return false;
     }
-    const setting = getSetting(msg.guild.id, "adminChannelId");
+    const setting = getSetting(inter.guildId, "channels", "admin");
     if (!setting) {
-        if (sendError) msg.channel.send("The admin channel for this server is not set. Use command `setchannel` to set it.");
+        if (sendError) inter.reply({ content: "The admin channel for this server is not set. Use command `setchannel` to set it.", ephemeral: true });
         return false;
     }
-    if (setting !== msg.channelId) {
-        if (sendError) msg.channel.send("This command can only be used in the admin channel.");
+    if (setting !== inter.channelId) {
+        if (sendError) inter.reply({ content: "This command can only be used in the admin channel.", ephemeral: true });
         return false;
     }
     return true;

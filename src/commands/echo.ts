@@ -1,20 +1,24 @@
 
 // Example command. Echoes the arguments to the command back.
 
-import { Message } from "discord.js";
+import { SlashCommandBuilder } from "@discordjs/builders";
+import { CommandInteraction } from "discord.js";
 import { Command } from "../Command";
 
 // BE CAREFUL! If your message contains content from the user, make sure to remove @mentions!
-function echo(msg: Message, text: string) {
-    msg.channel.send({ content: text, allowedMentions: { parse: []} });
+async function echo(inter: CommandInteraction) {
+    await inter.reply({ content: inter.options.getString("text"), allowedMentions: { parse: [] } });
 }
 
+const slash = new SlashCommandBuilder()
+    .setName("echo")
+    .setDescription("Echoes the arguments to the command back.")
+    .addStringOption(opt => opt.setName("text").setDescription("Text to echo.").setRequired(true));
+
 const commandEcho = new Command({
-    name: "Echo",
-    description: "Echoes the arguments to the command back.",
-    aliases: ["echo"],
+    name: "echo",
     exec: echo,
-    needsArgs: true
+    slashJSON: slash.toJSON()
 });
 
 export default commandEcho;

@@ -1,74 +1,67 @@
 
 // Set the channel where the bot takes admin commands.
 
-import { GuildChannel, Message, Permissions } from "discord.js";
+import { SlashCommandBuilder } from "@discordjs/builders";
+import { ChannelType } from "discord-api-types/v9";
+import { CommandInteraction } from "discord.js";
 import { Command } from "../Command";
-import { setSetting } from "../settings";
+import { setSetting } from "../stores/settings";
+import { Permissions } from "discord.js";
 
-type ChannelType = "admin" | "announce";
-type ChannelArgumentType = "adminChannelId" | "announceChannelId";
+const CHANNEL_TYPES = ["admin", "announce"];
+type SpecialChannelType = (typeof CHANNEL_TYPES)[number]; // convert to union
 
-async function setChannel(msg: Message, text: string, type: ChannelType) {
-    if (!msg.member || !msg.guild || !msg.channel.isText()) {
-        msg.channel.send("You can only run this command in a server text channel.");
+async function setChannel(inter: CommandInteraction) {
+    if (!inter.inCachedGuild() || !inter.channel) {
+        await inter.reply({ content: "You can only run this command in a server text channel.", ephemeral: true });
         return;
     }
 
-    if (!msg.member.permissions.has(Permissions.FLAGS.MANAGE_GUILD)) {
-        msg.channel.send("You must have the Manage Server permission to run this command.");
-    }
-
-    if (text === "") {
-        msg.channel.send("Provide the id of the channel as an argument, or use command `setchannel "+type+" here` to set this as the "+type+"channel.");
+    if (!inter.member.permissions.has(Permissions.FLAGS.MANAGE_GUILD) && !inter.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR) && inter.member.id !== inter.guild.ownerId) {
+        await inter.reply({ content: "You must have the Manage Server permission to run this command.", ephemeral: true });
         return;
     }
 
-    let resChannel;
-    if (text === "here") {
-        resChannel = msg.channel;
-    } else {
-        try {
-            resChannel = await msg.guild.channels.fetch(text);
-        } catch (err) {} // handled in next if block
-        if (!resChannel) {
-            msg.channel.send("Could not find channel with that id. Use command `setchannel "+type+" here` to set this channel as the "+type+" channel.");
-            return;
-        }
-    }
+    const resChannel = inter.options.getChannel("channel", true);
 
     if (!resChannel.isText()) {
-        msg.channel.send("Channel must be a text channel.");
-        return;
-    }
-    if (!(resChannel instanceof GuildChannel)) {
-        msg.channel.send("Channel must be part of a server.");
+        await inter.reply({ content: "Channel must be a text channel.", ephemeral: true });
         return;
     }
 
-    setSetting(msg.guild.id, type+"ChannelId" as ChannelArgumentType, resChannel.id);
-    msg.channel.send(`Set \`${resChannel.name}\` to be the ${type} channel.`);
+    const channelType = inter.options.getString("channeltype", true);
+    if (!CHANNEL_TYPES.includes(channelType)) {
+        await inter.reply({ content: "Invalid channel type.", ephemeral: true });
+        return;
+    }
+
+    setSetting(resChannel.guildId, resChannel.id, "channels", channelType); // maybe unnecessary due to pass-by-reference
+
+    await inter.reply({ content: `Set \`${resChannel.name}\` to be the ${channelType} channel.` });
+    return;
 }
 
-const cmdSetAdminChannel = new Command({
-    name: "Set Admin Channel",
-    description: "Set the admin channel.",
-    aliases: ["admin"],
-    exec: (msg, text) => setChannel(msg, text, "admin")
-});
-
-const cmdSetAnnounceChannel = new Command({
-    name: "Set Announce Channel",
-    description: "Set the announce channel.",
-    aliases: ["announce"],
-    exec: (msg, text) => setChannel(msg, text, "announce")
-});
+const slashSetChannel = new SlashCommandBuilder()
+    .setName("setchannel")
+    .setDescription("Sets the special channels in the server.")
+    .addStringOption(opt => 
+        opt.setName("channeltype")
+            .setDescription("The type of special channel to change.")
+            .setRequired(true)
+            .addChoices(...CHANNEL_TYPES.map(ct => ({
+                name: ct,
+                value: ct
+            }))))
+    .addChannelOption(opt => 
+        opt.setName("channel")
+            .setDescription("The channel to set as the new special channel.")
+            .setRequired(true)
+            .addChannelTypes(ChannelType.GuildText));
 
 const commandSetChannel = new Command({
-    name: "Set Admin Channel",
-    description: "Sets the special channels in the server. Arguments: `admin`, `announce`",
-    aliases: ["setchannel"],
-    exec: (msg, text) => msg.channel.send("Please use `admin` or `announce` to set the respective channel ids."),
-    subcommands: [cmdSetAdminChannel, cmdSetAnnounceChannel]
+    name: "setchannel",
+    exec: setChannel,
+    slashJSON: slashSetChannel.toJSON()
 });
 
 export default commandSetChannel;
