@@ -21,9 +21,11 @@ if (!config.token || !config.clientId) {
 const args = Minimist(process.argv, { string: "guild" });
 
 if (!args.guild && !args.global && !config.publishGuild) {
-    console.log("Run `npm run publish -- --guild=<GUILD ID>` to publish commands to a certain guild.\n\
-Run `npm run publish -- --global` to globally publish commands (NOT RECOMMENDED FOR DEVELOPMENT).\n\
-If you add the guild id to the config with key publishGuild, you can run `npm run publish` to publish to that guild.");
+    console.log([
+        "Run `npm run publish -- --guild=<GUILD ID>` to publish commands to a certain guild.",
+        "Run `npm run publish -- --global` to globally publish commands (NOT RECOMMENDED FOR DEVELOPMENT).",
+        "If you add the guild id to the config with key publishGuild, you can run `npm run publish` to publish to that guild."
+    ].join("\n"));
 } else {
     let guildId: string | null = null;
     if (args.guild || (!args.global && config.publishGuild)) {

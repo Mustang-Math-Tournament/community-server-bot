@@ -3,8 +3,8 @@
 
 import { SlashCommandSubcommandGroupBuilder } from "@discordjs/builders";
 import { SubcommandGroup } from "../../Command";
-import commandQuestion from "./edit/question";
-import commandAnswer from "./edit/answer";
+import { commandQuestion } from "./edit/question";
+import { commandAnswer } from "./edit/answer";
 
 const slash = new SlashCommandSubcommandGroupBuilder()
     .setName("edit")

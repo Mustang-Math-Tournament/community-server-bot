@@ -6,17 +6,19 @@ import { Command } from "../../Command";
 import { commandAdd } from "./add";
 import { commandEdit } from "./edit";
 import { commandView } from "./view";
+import { commandFinish } from "./finish";
 
 const slash = new SlashCommandBuilder()
     .setName("problem")
     .setDescription("Overall command for problems")
     .addSubcommand(commandAdd.slash)
     .addSubcommand(commandView.slash)
+    .addSubcommand(commandFinish.slash)
     .addSubcommandGroup(commandEdit.slash)
 
 export const commandProblem = new Command({
     name: "problem",
     slashJSON: slash.toJSON(),
-    subcommands: [commandAdd, commandView],
+    subcommands: [commandAdd, commandView, commandFinish],
     subcommandGroups: [commandEdit]
 });

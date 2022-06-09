@@ -15,7 +15,7 @@ async function exec(inter: CommandInteraction) {
     if (!problemObj) {
         let content: string;
         if (!getProblem(problemId)) { // already finalized
-            content = "This problem is already finalized. Use `/editproblem unfinalize` to unfinalize it."; // TODO: add unfinalize
+            content = "This problem is already finalized. Use `/editproblem unfinalize` to unfinalize it.";
         } else {
             content = "No problems exist with this id.";
         }
@@ -46,10 +46,8 @@ const slash = new SlashCommandSubcommandBuilder()
         .setName("question")
         .setDescription("The new text of the question. If not included, the question is erased."));
 
-const commandQuestion = new Subcommand({
+export const commandQuestion = new Subcommand({
     name: "question",
     exec,
     slash
 });
-
-export default commandQuestion;
