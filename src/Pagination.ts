@@ -1,7 +1,7 @@
 
 // pagination stolen from another one of my projects
 
-import Discord from "discord.js";
+import { CommandInteraction, Message, MessageActionRow, MessageButton } from "discord.js";
 import nodeCleanup from "node-cleanup";
 
 const emojis = ["⏪","◀️","▶️","⏩"];
@@ -15,20 +15,16 @@ interface PaginationOptions {
     startMax?: number;
 }
 
-// List of messages with active buttons.
-let messageList: Discord.Message[] = [];
-
 class Pagination {
-    startMsg: Discord.Message;
+    startMsg: CommandInteraction<"cached">;
     rangeMin: number;
     rangeMax: number;
     displayAmount: number;
     curMin: number;
     curMax: number;
-    displayMsg?: Discord.Message;
-    emojiRow?: Discord.MessageActionRow;
+    emojiRow?: MessageActionRow;
 
-    constructor(originalMsg: Discord.Message, opts: PaginationOptions) {
+    constructor(originalMsg: CommandInteraction<"cached">, opts: PaginationOptions) {
         this.startMsg = originalMsg;
         this.display = opts.displayFunc;
         this.rangeMin = opts.rangeMin;
@@ -36,11 +32,10 @@ class Pagination {
         this.displayAmount = opts.displayAmount ?? 5;
         this.curMin = opts.startMin ?? this.rangeMin;
         this.curMax = opts.startMax ?? Math.min(this.rangeMin+this.displayAmount-1, this.rangeMax);
-        originalMsg.channel.send("Loading...").then(res => {
-            this.displayMsg = res;
-            this.setupButtons();
+        originalMsg.reply("Loading...").then(async () => {
+            await this.setupButtons();
             this.updateButtons();
-            res.edit({ content: this.display(this.curMin, this.curMax), components: [this.emojiRow!] });
+            this.startMsg.editReply({ content: this.display(this.curMin, this.curMax), components: [this.emojiRow!] });
         });
     }
 
@@ -81,11 +76,11 @@ class Pagination {
         this.curMax = newMax;
     }
 
-    setupButtons() {
-        const row = new Discord.MessageActionRow();
+    async setupButtons() {
+        const row = new MessageActionRow();
         emojis.forEach((em, ind) => {
             row.addComponents(
-                new Discord.MessageButton()
+                new MessageButton()
                     .setCustomId("page"+ind)
                     .setLabel(em)
                     .setStyle("PRIMARY")
@@ -93,10 +88,10 @@ class Pagination {
         });
         this.emojiRow = row;
 
-        const collector = this.displayMsg!.createMessageComponentCollector({ time: 120000 });
+        const reply = await this.startMsg.fetchReply();
+        const collector = reply.createMessageComponentCollector({ time: 120000 });
         collector.on("collect", async i => {
             if (!i.isButton()) {
-                console.log("Wrong type of interaction");
                 return;
             }
             const id = i.customId;
@@ -112,8 +107,7 @@ class Pagination {
         })
 
         collector.on("end", coll => {
-            this.displayMsg?.edit({ components: [] });
-            messageList = messageList.filter(x => x.id !== this.displayMsg?.id);
+            this.startMsg.editReply({ components: [] });
         })
     }
 
@@ -135,13 +129,5 @@ class Pagination {
         }
     }
 }
-
-// Cleanup function to remove on closing.
-function removeInteractions() {
-    messageList.forEach(msg => msg.edit({ components: [] }));
-    console.log("Maybe edited messages");
-}
-
-nodeCleanup(removeInteractions);
 
 export default Pagination;

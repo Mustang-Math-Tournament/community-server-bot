@@ -99,6 +99,10 @@ export function getUnfinished(id: number) {
     return unfinishedProblems.find(x => x.id === id);
 }
 
+export function getAllUnfinished() {
+    return unfinishedProblems;
+}
+
 export function addUnfinished(p: Problem) {
     unfinishedProblems.push(p);
 }
