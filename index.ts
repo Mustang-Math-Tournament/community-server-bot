@@ -2,7 +2,7 @@ import { Client, Intents } from "discord.js";
 import { token } from "./config.json";
 import commandList from "./src/commandList";
 import "./src/stores/problemQueue";
-import { setAllSchedules } from "./src/scheduler";
+import { setAllSchedules } from "./src/stores/scheduler";
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 

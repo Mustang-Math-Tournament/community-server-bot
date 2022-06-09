@@ -13,7 +13,7 @@ async function execAddProblem(inter: CommandInteraction) {
 
     const newProblem = new Problem({});
     addUnfinished(newProblem);
-    inter.reply("Created a new problem with id `"+newProblem.id+"`. Edit it with /editproblem.");
+    inter.reply("Created a new problem with id `"+newProblem.id+"`. Edit it with /problem edit.");
 }
 
 const slash = new SlashCommandSubcommandBuilder()

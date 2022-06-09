@@ -5,7 +5,7 @@ import { SlashCommandSubcommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
 import { verifyAdmin } from "../../checkPermissions";
 import { Subcommand } from "../../Command";
-import { releaseProblem } from "../../scheduler";
+import { releaseProblem } from "../../stores/scheduler";
 
 async function forceReleaseProblem(inter: CommandInteraction) {
     if (!verifyAdmin(inter, true)) return;

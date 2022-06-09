@@ -2,8 +2,8 @@
 // Schedules and executes the release of the problem.
 
 import { Client } from "discord.js";
-import { getShown, getTopProblem, removeTopProblem, setShown } from "./stores/problemQueue";
-import { getSetting } from "./stores/settings";
+import { getShown, getTopProblem, removeTopProblem, setShown } from "./problemQueue";
+import { getSetting } from "./settings";
 import Schedule from "node-schedule";
 
 let scheduledJobs: { [key: string]: Schedule.Job } = {};
@@ -31,10 +31,6 @@ export async function releaseProblem(client: Client, guildId: string) {
         await errorInAdminChannel(client, guildId, "Error: There is no problem in the queue for today!");
         return;
     }
-    if (!getTopProblem()) {
-        await errorInAdminChannel(client, guildId, "Warning: There is no problem in the queue for tomorrow!");
-    }
-
     const announceChannelId = getSetting(guildId, "channels", "announce") as string | undefined;
     if (!announceChannelId) {
         await errorInAdminChannel(client, guildId, "Error: There is no announcement channel set for this server!");
@@ -50,6 +46,10 @@ export async function releaseProblem(client: Client, guildId: string) {
     announceChannel.send(newProblem.createMessage());
     setShown(newProblem);
     removeTopProblem();
+
+    if (!getTopProblem()) {
+        await errorInAdminChannel(client, guildId, "Warning: There is no problem in the queue for tomorrow!");
+    }
 }
 
 export function setScheduler(client: Client, guildId: string) {

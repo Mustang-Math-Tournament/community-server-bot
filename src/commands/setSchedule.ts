@@ -3,47 +3,45 @@
 // TODO: support slash commands
 
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { Message } from "discord.js";
+import { CommandInteraction } from "discord.js";
 import { verifyAdmin } from "../checkPermissions";
 import { Command } from "../Command";
-import { setScheduler } from "../scheduler";
-import { setSetting } from "../settings";
+import { setScheduler } from "../stores/scheduler";
+import { setSetting } from "../stores/settings";
 
-function setSchedule(msg: Message, text: string) {
-    // verify admin
-    if (!msg.member || !msg.guild) {
-        msg.channel.send("You can only run this command in a server.");
-        return;
-    }
-    if (!verifyAdmin(msg, true)) return;
+async function setSchedule(inter: CommandInteraction) {
+    if (!verifyAdmin(inter, true)) return;
+
+    const dateText = inter.options.getString("time", true);
 
     const timeRegex = /^([0-2][0-9]):([0-5][0-9])$/;
-    const matches = text.match(timeRegex);
+    const matches = dateText.match(timeRegex);
     if (!matches) {
-        msg.channel.send("Please format release time as 24-hour hh:mm in UTC time zone. Examples: 08:04, 23:59");
+        await inter.reply({ content: "Please format release time as 24-hour hh:mm in UTC time zone. Examples: 08:04, 23:59", ephemeral: true });
         return;
     }
 
     const hours = parseInt(matches[1]), minutes = parseInt(matches[2]);
     if (hours < 0 || hours >= 24 || isNaN(hours) || minutes < 0 || minutes >= 60 || isNaN(minutes)) {
-        msg.channel.send("Invalid time. Please format release time as 24-hour hh:mm in UTC time zone. Examples: 08:04, 23:59");
+        await inter.reply({ content: "Please format release time as 24-hour hh:mm in UTC time zone. Examples: 08:04, 23:59", ephemeral: true });
         return;
     }
 
-    msg.channel.send("Set schedule for this server to "+hours+":"+minutes);
-    setSetting(msg.guild.id, "schedule", [hours, minutes]);
-    setScheduler(msg.client, msg.guild.id);
+    inter.reply("Set schedule for this server to "+hours+":"+minutes);
+    setSetting(inter.guild.id, [hours, minutes], "schedule");
+    setScheduler(inter.client, inter.guild.id);
 }
 
-function buildSlash() {
-    return new SlashCommandBuilder();
-}
+const slash = new SlashCommandBuilder()
+    .setName("setschedule")
+    .setDescription("Set the problem release schedule for this server.")
+    .addStringOption(opt => opt
+        .setName("time")
+        .setDescription("Time of day to release. Format as 24-hour hh:mm in UTC time zone. Examples: 08:04, 23:59")
+        .setRequired(true));
 
-const commandSetSchedule = new Command({
+export const commandSetSchedule = new Command({
     name: "setschedule",
-    description: "Set the problem release schedule for this server.",
     exec: setSchedule,
-    buildSlash
+    slashJSON: slash.toJSON()
 });
-
-export default commandSetSchedule;
