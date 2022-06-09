@@ -17,12 +17,15 @@
         "@types/node-schedule": "^2.1.0",
         "discord-api-types": "^0.33.2",
         "discord.js": "^13.7.0",
+        "eslint": "^8.17.0",
         "fs": "^0.0.1-security",
         "minimist": "^1.2.6",
         "node-cleanup": "^2.1.2",
         "node-schedule": "^2.1.0"
     },
     "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "^5.27.1",
+        "@typescript-eslint/parser": "^5.27.1",
         "typescript": "^4.6.4"
     }
 }
