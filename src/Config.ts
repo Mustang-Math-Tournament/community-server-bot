@@ -1,8 +1,10 @@
 
 // Defines the format of the config file.
 
-export default interface Config {
+interface Config {
     token: string;
     clientId: string;
     publishGuild?: string;
 }
+
+export default Config;

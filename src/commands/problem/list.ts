@@ -1,17 +1,17 @@
 
 // List the current problems in the queue.
 
-import { SlashCommandBuilder, SlashCommandSubcommandGroupBuilder } from "@discordjs/builders";
-import { CommandInteraction, Message } from "discord.js";
+import { SlashCommandSubcommandGroupBuilder } from "@discordjs/builders";
+import { CommandInteraction } from "discord.js";
 import { verifyAdmin } from "../../checkPermissions";
-import { Command, Subcommand, SubcommandGroup } from "../../Command";
+import { Subcommand, SubcommandGroup } from "../../Command";
 import Pagination from "../../Pagination";
 import { getAllProblems, getAllUnfinished } from "../../stores/problemQueue";
 
 const SNIPPET_LENGTH = 40;
 function getSnippet(text: string) {
     if (text.length > SNIPPET_LENGTH) {
-        return text.substring(0, SNIPPET_LENGTH-3) + "...";
+        return text.substring(0, SNIPPET_LENGTH - 3) + "...";
     }
     return text;
 }
@@ -32,9 +32,9 @@ async function exec(inter: CommandInteraction, finished: boolean) {
         displayFunc: (start, end) => {
             let str = `Current problems in ${finished ? "finished" : "unfinished"} queue:\n\n`;
             for (let i = start; i <= end; i++) {
-                const pb = problems[i-1];
+                const pb = problems[i - 1];
                 const qtext = pb.question.length === 0 ? "[no question text]" : getSnippet(pb.question);
-                str += `${finished ? i+"." : "-"} id: \`${pb.id}\`; question: ${qtext}\n`;
+                str += `${finished ? i + "." : "-"} id: \`${pb.id}\`; question: ${qtext}\n`;
             }
             return str;
         }

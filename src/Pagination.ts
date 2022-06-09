@@ -1,10 +1,9 @@
 
 // pagination stolen from another one of my projects
 
-import { CommandInteraction, Message, MessageActionRow, MessageButton } from "discord.js";
-import nodeCleanup from "node-cleanup";
+import { CommandInteraction, MessageActionRow, MessageButton } from "discord.js";
 
-const emojis = ["⏪","◀️","▶️","⏩"];
+const emojis = ["⏪", "◀️", "▶️", "⏩"];
 
 interface PaginationOptions {
     displayFunc: (rangeStart: number, rangeEnd: number) => string;
@@ -23,6 +22,7 @@ class Pagination {
     curMin: number;
     curMax: number;
     emojiRow?: MessageActionRow;
+    display: (rangeStart: number, rangeEnd: number) => string;
 
     constructor(originalMsg: CommandInteraction<"cached">, opts: PaginationOptions) {
         this.startMsg = originalMsg;
@@ -31,18 +31,12 @@ class Pagination {
         this.rangeMax = opts.rangeMax;
         this.displayAmount = opts.displayAmount ?? 5;
         this.curMin = opts.startMin ?? this.rangeMin;
-        this.curMax = opts.startMax ?? Math.min(this.rangeMin+this.displayAmount-1, this.rangeMax);
+        this.curMax = opts.startMax ?? Math.min(this.rangeMin + this.displayAmount - 1, this.rangeMax);
         originalMsg.reply("Loading...").then(async () => {
             await this.setupButtons();
             this.updateButtons();
-            this.startMsg.editReply({ content: this.display(this.curMin, this.curMax), components: [this.emojiRow!] });
+            this.startMsg.editReply({ content: this.display(this.curMin, this.curMax), components: this.emojiRow ? [this.emojiRow] : [] });
         });
-    }
-
-    // this should return the string to update the message with (CHANGE FROM BEFORE)
-    display(rangeStart: number, rangeEnd: number) {
-        console.log("Display not configured for this pagination!");
-        return "Failed to load!";
     }
 
     // type: 0 = far left, 1 = one left, 2 = one right, 3 = far right
@@ -51,24 +45,25 @@ class Pagination {
         switch (type) {
             case 0:
                 newMin = this.rangeMin;
-                newMax = Math.min(this.rangeMin+this.displayAmount-1, this.rangeMax);
+                newMax = Math.min(this.rangeMin + this.displayAmount - 1, this.rangeMax);
                 break;
             case 1:
-                newMin = Math.max(this.rangeMin, this.curMin-this.displayAmount);
-                newMax = Math.max(this.rangeMin, this.curMin-1);
+                newMin = Math.max(this.rangeMin, this.curMin - this.displayAmount);
+                newMax = Math.max(this.rangeMin, this.curMin - 1);
                 break;
             case 2:
-                newMin = Math.min(this.curMax+1, this.rangeMax);
-                newMax = Math.min(this.curMax+this.displayAmount, this.rangeMax);
+                newMin = Math.min(this.curMax + 1, this.rangeMax);
+                newMax = Math.min(this.curMax + this.displayAmount, this.rangeMax);
                 break;
-            case 3:
-                let flr = Math.floor((this.rangeMax-this.rangeMin)/this.displayAmount)*this.displayAmount+this.rangeMin; // whew
+            case 3: {
+                const flr = Math.floor((this.rangeMax - this.rangeMin) / this.displayAmount) * this.displayAmount + this.rangeMin; // whew
                 newMin = Math.min(flr, this.rangeMax);
                 newMax = this.rangeMax;
                 break;
+            }
             default:
                 newMin = this.rangeMin;
-                newMax = Math.min(this.rangeMin+this.displayAmount-1, this.rangeMax);
+                newMax = Math.min(this.rangeMin + this.displayAmount - 1, this.rangeMax);
                 break;
         }
 
@@ -81,7 +76,7 @@ class Pagination {
         emojis.forEach((em, ind) => {
             row.addComponents(
                 new MessageButton()
-                    .setCustomId("page"+ind)
+                    .setCustomId("page" + ind)
                     .setLabel(em)
                     .setStyle("PRIMARY")
             );
@@ -99,16 +94,16 @@ class Pagination {
                 console.log("Incorrect button id somehow...");
                 return;
             }
-            const num = parseInt(id.substring(id.length-1));
+            const num = parseInt(id.substring(id.length - 1));
             // TODO: check if NaN
             this.adjust(num);
             this.updateButtons();
-            i.update({ content: this.display(this.curMin, this.curMax), components: [this.emojiRow!] });
-        })
+            i.update({ content: this.display(this.curMin, this.curMax), components: this.emojiRow ? [this.emojiRow] : [] });
+        });
 
-        collector.on("end", coll => {
+        collector.on("end", () => {
             this.startMsg.editReply({ components: [] });
-        })
+        });
     }
 
     updateButtons() {

@@ -36,13 +36,13 @@ export function getSetting(guildId: string, ...settingList: string[]) {
 export function setSetting(guildId: string, value: any, ...settingList: string[]) {
     if (!settings[guildId]) settings[guildId] = {};
     let curLevel: any = settings[guildId];
-    for (let i = 0; i < settingList.length-1; i++) {
-        if (!(typeof curLevel === "object")) throw "Setting does not contain sub-settings!"
+    for (let i = 0; i < settingList.length - 1; i++) {
+        if (!(typeof curLevel === "object")) throw "Setting does not contain sub-settings!";
         if (!(settingList[i] in curLevel)) curLevel[settingList[i]] = {};
         curLevel = curLevel[settingList[i]];
     }
     // stop before the last one to modify the reference
-    curLevel[settingList[settingList.length-1]] = value;
+    curLevel[settingList[settingList.length - 1]] = value;
 }
 
 loadSettings();

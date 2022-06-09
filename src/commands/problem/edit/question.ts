@@ -27,7 +27,7 @@ async function exec(inter: CommandInteraction) {
     if (!newQuestion) {
         const oldQuestion = problemObj.question;
         problemObj.question = "";
-        const readQuestion = oldQuestion ? `:\n${oldQuestion}` : ` blank.`;
+        const readQuestion = oldQuestion ? `:\n${oldQuestion}` : " blank.";
         await inter.reply(`Problem ${problemId}'s question was erased. It previously was${readQuestion}`);
     } else {
         problemObj.question = newQuestion;

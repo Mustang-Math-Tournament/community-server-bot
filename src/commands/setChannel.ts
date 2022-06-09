@@ -9,7 +9,6 @@ import { setSetting } from "../stores/settings";
 import { Permissions } from "discord.js";
 
 const CHANNEL_TYPES = ["admin", "announce"];
-type SpecialChannelType = (typeof CHANNEL_TYPES)[number]; // convert to union
 
 async function setChannel(inter: CommandInteraction) {
     if (!inter.inCachedGuild() || !inter.channel) {
@@ -44,7 +43,7 @@ async function setChannel(inter: CommandInteraction) {
 const slashSetChannel = new SlashCommandBuilder()
     .setName("setchannel")
     .setDescription("Sets the special channels in the server.")
-    .addStringOption(opt => 
+    .addStringOption(opt =>
         opt.setName("channeltype")
             .setDescription("The type of special channel to change.")
             .setRequired(true)
@@ -52,7 +51,7 @@ const slashSetChannel = new SlashCommandBuilder()
                 name: ct,
                 value: ct
             }))))
-    .addChannelOption(opt => 
+    .addChannelOption(opt =>
         opt.setName("channel")
             .setDescription("The channel to set as the new special channel.")
             .setRequired(true)

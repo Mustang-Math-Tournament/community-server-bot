@@ -40,8 +40,8 @@ if (!args.guild && !args.global && !config.publishGuild) {
     }
 
     const rest = new REST({ version: "9" }).setToken(config.token);
-    
-    async function sendCommands() {
+
+    (async () => {
         try {
             console.log("Started refreshing slash commands.");
 
@@ -55,7 +55,5 @@ if (!args.guild && !args.global && !config.publishGuild) {
         } catch (err) {
             console.error(err);
         }
-    }
-
-    sendCommands();
+    })();
 }

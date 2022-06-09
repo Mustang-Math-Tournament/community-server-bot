@@ -114,7 +114,7 @@ export function removeUnfinished(id: number) {
 // make a problem finished and add it to the problem queue
 export function finalize(id: number) {
     const pb = getUnfinished(id);
-    if (!pb) throw "Problem with id "+id+" not found";
+    if (!pb) throw "Problem with id " + id + " not found";
     removeUnfinished(id);
     pb.finished = true;
     addProblem(pb);
@@ -122,7 +122,7 @@ export function finalize(id: number) {
 
 export function unfinalize(id: number) {
     const pb = removeProblem(id);
-    if (!pb) throw "Problem with id "+id+" not found";
+    if (!pb) throw "Problem with id " + id + " not found";
     pb.finished = false;
     addUnfinished(pb);
 }

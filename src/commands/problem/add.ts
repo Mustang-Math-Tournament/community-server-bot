@@ -13,12 +13,12 @@ async function execAddProblem(inter: CommandInteraction) {
 
     const newProblem = new Problem({});
     addUnfinished(newProblem);
-    inter.reply("Created a new problem with id `"+newProblem.id+"`. Edit it with /problem edit.");
+    inter.reply("Created a new problem with id `" + newProblem.id + "`. Edit it with /problem edit.");
 }
 
 const slash = new SlashCommandSubcommandBuilder()
     .setName("add")
-    .setDescription("Add a new problem.")
+    .setDescription("Add a new problem.");
 
 export const commandAdd = new Subcommand({
     name: "add",

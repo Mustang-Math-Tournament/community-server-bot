@@ -27,7 +27,7 @@ async function setSchedule(inter: CommandInteraction) {
         return;
     }
 
-    inter.reply("Set schedule for this server to "+hours+":"+minutes);
+    inter.reply("Set schedule for this server to " + hours + ":" + minutes);
     setSetting(inter.guild.id, [hours, minutes], "schedule");
     setScheduler(inter.client, inter.guild.id);
 }

@@ -6,7 +6,7 @@ import { getShown, getTopProblem, removeTopProblem, setShown } from "./problemQu
 import { getSetting } from "./settings";
 import Schedule from "node-schedule";
 
-let scheduledJobs: { [key: string]: Schedule.Job } = {};
+const scheduledJobs: { [key: string]: Schedule.Job } = {};
 
 async function errorInAdminChannel(client: Client, guildId: string, err: string) {
     const adminChannelId = getSetting(guildId, "channels", "admin") as string | undefined;
@@ -39,7 +39,7 @@ export async function releaseProblem(client: Client, guildId: string) {
 
     const announceChannel = await client.channels.fetch(announceChannelId);
     if (!announceChannel || !announceChannel.isText()) {
-        await errorInAdminChannel(client, guildId, "Error: Announcement channel with id `"+announceChannelId+"` does not exist!");
+        await errorInAdminChannel(client, guildId, "Error: Announcement channel with id `" + announceChannelId + "` does not exist!");
         return;
     }
 

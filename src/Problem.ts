@@ -2,12 +2,12 @@
 // Randomly generate id number
 // Very low chance of collision
 
-import { ColorResolvable, FileOptions, InteractionReplyOptions, MessageEmbed, MessageOptions } from "discord.js";
+import { ColorResolvable, FileOptions, MessageEmbed } from "discord.js";
 import { color1 } from "../settings.json";
 
 // Probably should make this better later
 function createId() {
-    return Math.floor(Math.random()*1e9);
+    return Math.floor(Math.random() * 1e9);
 }
 
 export interface ProblemOptions {
@@ -37,10 +37,10 @@ export class Problem {
     _createEmbed(date?: string) {
         const embed = new MessageEmbed()
             .setColor(color1 as ColorResolvable)
-            .setTitle("Problem of the Day" + (date ? " "+date : ""))
+            .setTitle("Problem of the Day" + (date ? " " + date : ""))
             .setDescription(this.question);
 
-        if (this.images) embed.setImage(this.images[0]) // can only display first image
+        if (this.images) embed.setImage(this.images[0]); // can only display first image
         return embed;
     }
 
@@ -54,7 +54,7 @@ export class Problem {
 
         // trying to keep it a bit more organized
         const content = [
-            `**Problem of the Day${date ? " "+date : ""}**`,
+            `**Problem of the Day${date ? " " + date : ""}**`,
             this.finished ? "" : " (unfinished)",
             `\n${this.question}`,
             answer ? `\nAnswer: ${this.answer}` : ""

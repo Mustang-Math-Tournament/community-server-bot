@@ -38,7 +38,7 @@ export class Command {
                     return;
                 }
             }
-            throw "No subcommand group with name "+subcommandGroupName;
+            throw "No subcommand group with name " + subcommandGroupName;
         }
 
         const subcommandName = inter.options.getSubcommand(false);
@@ -49,11 +49,11 @@ export class Command {
                     return;
                 }
             }
-            throw "No subcommand with name "+subcommandName;
+            throw "No subcommand with name " + subcommandName;
         }
 
         if (!this.exec) {
-            throw "No execute function on command "+this.name;
+            throw "No execute function on command " + this.name;
         }
 
         await this.exec(inter);
@@ -73,7 +73,7 @@ export class Subcommand {
 
     constructor(opts: SubcommandOptions) {
         this.name = opts.name;
-        this.exec = opts.exec ?? (async () => {});
+        this.exec = opts.exec;
         this.slash = opts.slash;
     }
 }
@@ -104,7 +104,7 @@ export class SubcommandGroup {
                     return;
                 }
             }
-            throw "No subcommand with name "+subcommandName+" in group "+this.name;
+            throw "No subcommand with name " + subcommandName + " in group " + this.name;
         }
         throw "Somehow trying to execute a subcommand group";
     }

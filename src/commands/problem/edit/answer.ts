@@ -28,7 +28,7 @@ async function exec(inter: CommandInteraction) {
     if (!newAnswer) {
         const oldAnswer = problemObj.answer;
         problemObj.answer = "";
-        const readAnswer = oldAnswer ? `:\n${oldAnswer}` : ` blank.`;
+        const readAnswer = oldAnswer ? `:\n${oldAnswer}` : " blank.";
         await inter.reply(`Problem ${problemId}'s answer was erased. It previously was${readAnswer}`);
     } else {
         problemObj.answer = newAnswer;

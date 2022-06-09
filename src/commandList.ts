@@ -9,7 +9,7 @@ import commandSetChannel from "./commands/setChannel";
 import { commandSetSchedule } from "./commands/setSchedule";
 
 
-let commandList: Command[] = [
+const commandList: Command[] = [
     commandEcho,
     commandProblem,
     commandSetChannel,
