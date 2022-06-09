@@ -16,7 +16,7 @@ async function exec(inter: CommandInteraction) {
     if (!problemObj) {
         let content: string;
         if (!getProblem(problemId)) { // already finalized
-            content = "This problem is already finalized. Use `/editproblem unfinalize` to unfinalize it."; // TODO: add unfinalize
+            content = "This problem is already finalized. Use `/problem edit unfinish` to unfinalize it."; // TODO: add unfinalize
         } else {
             content = "No problems exist with this id.";
         }

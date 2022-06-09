@@ -12,10 +12,8 @@ const slash = new SlashCommandSubcommandGroupBuilder()
     .addSubcommand(commandQuestion.slash)
     .addSubcommand(commandAnswer.slash);
 
-const commandEditProblem = new SubcommandGroup({
+export const commandEdit = new SubcommandGroup({
     name: "edit",
     slash: slash,
     subcommands: [commandQuestion, commandAnswer]
 });
-
-export default commandEditProblem;
