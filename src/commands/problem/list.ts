@@ -1,6 +1,5 @@
 
 // List the current problems in the queue.
-// TODO: support slash commands
 
 import { SlashCommandBuilder, SlashCommandSubcommandGroupBuilder } from "@discordjs/builders";
 import { CommandInteraction, Message } from "discord.js";

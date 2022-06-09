@@ -16,7 +16,7 @@ async function exec(inter: CommandInteraction) {
     if (!problemObj) {
         let content: string;
         if (getUnfinished(problemId)) {
-            content = "This problem is not yet finished. Use `/problem finish` to finalize it."; // TODO: add unfinalize
+            content = "This problem is not yet finished. Use `/problem finish` to finalize it.";
         } else {
             content = "No problems exist with this id.";
         }
