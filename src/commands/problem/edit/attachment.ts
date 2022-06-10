@@ -1,5 +1,5 @@
 
-// Edit the question of a problem.
+// Edit the attachment of a problem.
 
 import { SlashCommandSubcommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
@@ -23,31 +23,33 @@ async function exec(inter: CommandInteraction) {
         return;
     }
 
-    const newQuestion = inter.options.getString("question");
-    if (!newQuestion) {
-        const oldQuestion = problemObj.question;
-        problemObj.question = "";
-        const readQuestion = oldQuestion ? `:\n${oldQuestion}` : " blank.";
-        await inter.reply(`Problem ${problemId}'s question was erased. It previously was${readQuestion}`);
+    const newAttachment = inter.options.getAttachment("attachment");
+    if (!newAttachment) {
+        const oldAttachment = problemObj.images ? problemObj.images[0] : "";
+        problemObj.images = [];
+        const readAttachment = oldAttachment ? `:\n${oldAttachment}` : " blank.";
+        await inter.reply(`Problem ${problemId}'s attachment was erased. It previously was${readAttachment}`);
+    } else if (!newAttachment.contentType?.startsWith("image")) {
+        await inter.reply({ content: "Attachment must be an image.", ephemeral: true });
     } else {
-        problemObj.question = newQuestion;
-        await inter.reply(`Problem ${problemId}'s question was updated to:\n${newQuestion}`);
+        problemObj.images = [newAttachment.url];
+        await inter.reply(`Problem ${problemId}'s attachment was updated to:\n${newAttachment.url}`);
     }
 }
 
 const slash = new SlashCommandSubcommandBuilder()
-    .setName("question")
-    .setDescription("Add or edit the question of a problem.")
+    .setName("attachment")
+    .setDescription("Add or edit the attachment of a problem.")
     .addIntegerOption(opt => opt
         .setName("problemid")
         .setDescription("The id of the problem to edit.")
         .setRequired(true))
-    .addStringOption(opt => opt
-        .setName("question")
-        .setDescription("The new text of the question. If not included, the question is erased."));
+    .addAttachmentOption(opt => opt
+        .setName("attachment")
+        .setDescription("The new attachment. If not included, the attachments are erased."));
 
-export const commandQuestion = new Subcommand({
-    name: "question",
+export const commandAttachment = new Subcommand({
+    name: "attachment",
     exec,
     slash
 });
