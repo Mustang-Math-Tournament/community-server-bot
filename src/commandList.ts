@@ -4,12 +4,14 @@
 
 import { Command } from "./Command";
 import commandEcho from "./commands/echo";
+import { commandAnswer } from "./commands/answer";
 import { commandProblem } from "./commands/problem/problem";
 import commandSetChannel from "./commands/setChannel";
 import { commandSetSchedule } from "./commands/setSchedule";
 
 
 const commandList: Command[] = [
+    commandAnswer,
     commandEcho,
     commandProblem,
     commandSetChannel,
