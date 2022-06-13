@@ -5,27 +5,34 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
 import { getShown } from "../stores/problemQueue";
 import { Command } from "../Command";
+import { getSenderUser } from "../stores/users";
+import { ProblemAnswer } from "../Problem";
 
 async function execAnswer(inter: CommandInteraction) {
-    if (inter.inGuild()) {
-        await inter.reply({ content: "This command must be run in a DM!", ephemeral: true });
+    if (!inter.inCachedGuild()) {
+        await inter.reply({ content: "This command must be run in a guild.", ephemeral: true });
         return;
     }
 
     const shown = getShown();
     if (!shown) {
-        await inter.reply({ content: "There is currently no problem of the day!", ephemeral: true });
+        await inter.reply({ content: "There is currently no problem of the day.", ephemeral: true });
+        return;
+    }
+
+    const user = getSenderUser(inter);
+    if (user.answers.find(x => x.problemId === shown.id)) {
+        await inter.reply({ content: "You have already answered today's problem.", ephemeral: true });
         return;
     }
 
     const answer = inter.options.getString("answer", true);
-    if (answer.trim().toLowerCase() === shown.answer.trim().toLowerCase()) {
-        // replace this later, just for testing
-        await inter.reply({ content: "Correct answer!", ephemeral: true });
-        return;
-    } else {
-        await inter.reply({ content: "Incorrect answer!", ephemeral: true });
-    }
+    user.answers.push(new ProblemAnswer({
+        answer,
+        problemId: shown.id,
+        time: new Date().getTime()
+    }));
+    await inter.reply({ content: "Your answer has been submitted.", ephemeral: true });
 }
 
 const slash = new SlashCommandBuilder()

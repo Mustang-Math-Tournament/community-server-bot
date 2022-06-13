@@ -18,9 +18,14 @@ function saveUsers() {
     console.log("Saved users");
 }
 
-export function getSender(inter: CommandInteraction) {
-    if (!inter.inCachedGuild()) return null;
-    return users[inter.guildId]?.find(x => x.id === inter.user.id);
+export function getSenderUser(inter: CommandInteraction<"cached">) {
+    let res = users[inter.guildId]?.find(x => x.id === inter.user.id);
+    if (!res) {
+        res = new User({ id: inter.user.id });
+        if (!users[inter.guildId]) users[inter.guildId] = [];
+        users[inter.guildId].push(res);
+    }
+    return res;
 }
 
 loadUsers();
