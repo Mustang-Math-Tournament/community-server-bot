@@ -29,6 +29,7 @@ async function execAnswer(inter: CommandInteraction) {
     const answer = inter.options.getString("answer", true);
     user.answers.push(new ProblemAnswer({
         answer,
+        userId: user.id,
         problemId: shown.id,
         time: new Date().getTime()
     }));

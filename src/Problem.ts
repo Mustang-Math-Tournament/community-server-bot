@@ -63,9 +63,14 @@ export class Problem {
             files: imageAttachments
         };
     }
+
+    isCorrect(ans: ProblemAnswer) {
+        return this.answer.trim().toLowerCase() === ans.answer.trim().toLowerCase();
+    }
 }
 
 interface ProblemAnswerOptions {
+    userId: string;
     problemId: number;
     answer: string;
     time: number;
@@ -73,11 +78,13 @@ interface ProblemAnswerOptions {
 
 // a user's answer to a problem
 export class ProblemAnswer {
+    userId: string;
     problemId: number;
     answer: string;
     time: number;
 
     constructor(opts: ProblemAnswerOptions) {
+        this.userId = opts.userId;
         this.problemId = opts.problemId;
         this.answer = opts.answer;
         this.time = opts.time;

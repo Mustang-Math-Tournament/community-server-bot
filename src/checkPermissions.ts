@@ -1,4 +1,4 @@
-import { CommandInteraction } from "discord.js";
+import { Client, CommandInteraction } from "discord.js";
 import { getSetting } from "./stores/settings";
 
 // Verifies if a message is sent in a guild channel.
@@ -18,4 +18,13 @@ export function verifyAdmin(inter: CommandInteraction, sendError: boolean): inte
         return false;
     }
     return true;
+}
+
+export async function errorInAdminChannel(client: Client, guildId: string, err: string) {
+    const adminChannelId = getSetting(guildId, "channels", "admin") as string | undefined;
+    if (!adminChannelId) return;
+    const channel = await client.channels.fetch(adminChannelId);
+    if (!channel || !channel.isText()) return;
+    channel.send(err);
+    return;
 }

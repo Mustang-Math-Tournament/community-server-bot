@@ -53,16 +53,14 @@ export function getTopProblem() {
     return allProblems.find(x => x.id === problemQueue[0]);
 }
 
-// Remove the first problem in the queue
+// Remove the first problem in the queue, doesn't fully delete it
 export function removeTopProblem() {
     if (problemQueue.length === 0) return;
-    removeProblem(problemQueue[0]);
     problemQueue = problemQueue.slice(1);
 }
 
 // Get problem in queue by id
 export function getProblem(id: number) {
-    if (!problemQueue.includes(id)) return undefined;
     return allProblems.find(x => x.id === id);
 }
 
@@ -122,6 +120,7 @@ export function getAllUnfinished() {
 
 export function addUnfinished(p: Problem) {
     unfinishedProblems.push(p.id);
+    console.log(allProblems, p);
     if (!allProblems.some(x => x.id === p.id)) allProblems.push(p);
 }
 

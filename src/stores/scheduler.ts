@@ -5,25 +5,18 @@ import { Client } from "discord.js";
 import { getShown, getTopProblem, removeTopProblem, setShown } from "./problemQueue";
 import { getSetting } from "./settings";
 import Schedule from "node-schedule";
+import { errorInAdminChannel } from "../checkPermissions";
+import { showProblemResults } from "../showResults";
 
 const scheduledJobs: { [key: string]: Schedule.Job } = {};
-
-async function errorInAdminChannel(client: Client, guildId: string, err: string) {
-    const adminChannelId = getSetting(guildId, "channels", "admin") as string | undefined;
-    if (!adminChannelId) return;
-    const channel = await client.channels.fetch(adminChannelId);
-    if (!channel || !channel.isText()) return;
-    channel.send(err);
-    return;
-}
 
 export async function releaseProblem(client: Client, guildId: string) {
     const oldProblem = getShown();
     if (oldProblem) {
-        // updateLeaderboard()
-        // addToArchive()
         setShown(null);
+        showProblemResults(client, guildId, oldProblem);
     }
+
 
     const newProblem = getTopProblem();
     if (!newProblem) {

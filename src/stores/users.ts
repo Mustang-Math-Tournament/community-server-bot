@@ -1,6 +1,7 @@
 import { CommandInteraction } from "discord.js";
 import fs from "fs";
 import nodeCleanup from "node-cleanup";
+import { ProblemAnswer } from "../Problem";
 import { User } from "../User";
 
 const FILE_PATH = "./stored/users.json";
@@ -26,6 +27,14 @@ export function getSenderUser(inter: CommandInteraction<"cached">) {
         users[inter.guildId].push(res);
     }
     return res;
+}
+
+export function getGuildUsers(id: string) {
+    return users[id];
+}
+
+export function getProblemUserAnswers(guildId: string, problemId: number) {
+    return users[guildId]?.map(x => x.answers.find(p => p.problemId === problemId)).filter((x): x is ProblemAnswer => x !== undefined);
 }
 
 loadUsers();

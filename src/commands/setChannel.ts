@@ -8,7 +8,7 @@ import { Command } from "../Command";
 import { setSetting } from "../stores/settings";
 import { Permissions } from "discord.js";
 
-const CHANNEL_TYPES = ["admin", "announce"];
+const CHANNEL_TYPES = ["admin", "announce", "results"];
 
 async function setChannel(inter: CommandInteraction) {
     if (!inter.inCachedGuild() || !inter.channel) {
@@ -36,7 +36,7 @@ async function setChannel(inter: CommandInteraction) {
 
     setSetting(resChannel.guildId, resChannel.id, "channels", channelType); // maybe unnecessary due to pass-by-reference
 
-    await inter.reply({ content: `Set \`${resChannel.name}\` to be the ${channelType} channel.` });
+    await inter.reply({ content: `Set ${resChannel.toString()} to be the ${channelType} channel.` });
     return;
 }
 
