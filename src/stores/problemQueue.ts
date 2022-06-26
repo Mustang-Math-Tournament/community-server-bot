@@ -7,29 +7,33 @@ import nodeCleanup from "node-cleanup";
 
 const FILE_PATH = "./stored/problemqueue.json";
 
-let problemQueue: Problem[] = [];
-let unfinishedProblems: Problem[] = [];
-let shownProblem: Problem | null = null;
+let allProblems: Problem[] = []; // list of all problems, finished/unfinished/archived
+let problemQueue: number[] = []; // ids of problems in queue
+let unfinishedProblems: number[] = []; // ids of unfinished problems
+let shownProblem: number | null = null;
 
 interface ProblemSave {
-    problemQueue: ProblemOptions[];
-    unfinishedProblems: ProblemOptions[];
-    shownProblem: ProblemOptions | null;
+    allProblems: ProblemOptions[];
+    problemQueue: number[];
+    unfinishedProblems: number[];
+    shownProblem: number | null;
 }
 
 // read problems that were saved to the file
 export function loadProblems() {
     if (fs.existsSync(FILE_PATH)) {
         const problemJSON = JSON.parse(fs.readFileSync(FILE_PATH, "utf8")) as ProblemSave;
-        if (problemJSON.problemQueue) problemQueue.push(...problemJSON.problemQueue.map(x => new Problem(x)));
-        if (problemJSON.unfinishedProblems) unfinishedProblems.push(...problemJSON.unfinishedProblems.map(x => new Problem(x)));
-        shownProblem = problemJSON.shownProblem ? new Problem(problemJSON.shownProblem) : null;
+        if (problemJSON.allProblems) allProblems.push(...problemJSON.allProblems.map(x => new Problem(x)));
+        if (problemJSON.problemQueue) problemQueue.push(...problemJSON.problemQueue);
+        if (problemJSON.unfinishedProblems) unfinishedProblems.push(...problemJSON.unfinishedProblems);
+        shownProblem = problemJSON.shownProblem ? problemJSON.shownProblem : null;
     }
 }
 
 // write problems to file
 function saveProblems() {
     fs.writeFileSync(FILE_PATH, JSON.stringify({
+        allProblems,
         problemQueue,
         unfinishedProblems,
         shownProblem
@@ -39,54 +43,63 @@ function saveProblems() {
 
 // Add a problem to the end of the queue
 export function addProblem(prob: Problem) {
-    problemQueue.push(prob);
+    if (!allProblems.some(x => x.id === prob.id)) allProblems.push(prob);
+    problemQueue.push(prob.id);
 }
 
 // Get the first problem in the queue
 export function getTopProblem() {
     if (problemQueue.length === 0) return undefined;
-    return problemQueue[0];
+    return allProblems.find(x => x.id === problemQueue[0]);
 }
 
-// Remove the first problem in the queue
+// Remove the first problem in the queue, doesn't fully delete it
 export function removeTopProblem() {
     if (problemQueue.length === 0) return;
     problemQueue = problemQueue.slice(1);
 }
 
-// Get problem by id
+// Get problem in queue by id
 export function getProblem(id: number) {
-    return problemQueue.find(x => x.id === id);
+    return allProblems.find(x => x.id === id);
 }
 
 // Remove problem by id, returns the first removed problem (if any)
 export function removeProblem(id: number) {
     const ret = getProblem(id);
-    problemQueue = problemQueue.filter(x => x.id !== id);
+    allProblems = allProblems.filter(x => x.id !== id);
+    unfinishedProblems = unfinishedProblems.filter(x => x !== id);
+    problemQueue = problemQueue.filter(x => x !== id);
     return ret;
 }
 
 export function isValidProblemId(id: string | number) {
     if (typeof id === "number") {
-        return problemQueue.some(x => x.id === id);
+        return problemQueue.includes(id);
     }
     const parsed = parseInt(id);
     if (isNaN(parsed)) return false;
-    return problemQueue.some(x => x.id === parsed);
+    return problemQueue.includes(parsed);
 }
 
 // If you need to edit a problem, just (ab)use the fact that objects are references and modify the properties directly.
 
+// clarification: this gets all problems *in the queue*
 export function getAllProblems() {
-    return problemQueue;
+    return problemQueue.map(x => allProblems.find(p => p.id === x))
+        .filter((x): x is Problem => x !== undefined); // get rid of undefineds
 }
 
 export function getShown() {
-    return shownProblem;
+    return allProblems.find(x => x.id === shownProblem);
 }
 
-export function setShown(p: Problem | null) {
-    shownProblem = p;
+export function setShown(p: Problem | number | null) {
+    if (p instanceof Problem) {
+        shownProblem = p.id;
+    } else {
+        shownProblem = p;
+    }
 }
 
 export function problemQueueSize() {
@@ -96,19 +109,23 @@ export function problemQueueSize() {
 // unfinished problem queue functions
 
 export function getUnfinished(id: number) {
-    return unfinishedProblems.find(x => x.id === id);
+    if (!unfinishedProblems.includes(id)) return undefined;
+    return allProblems.find(x => x.id === id);
 }
 
 export function getAllUnfinished() {
-    return unfinishedProblems;
+    return unfinishedProblems.map(x => allProblems.find(p => p.id === x))
+        .filter((x): x is Problem => x !== undefined); // get rid of undefineds
 }
 
 export function addUnfinished(p: Problem) {
-    unfinishedProblems.push(p);
+    unfinishedProblems.push(p.id);
+    console.log(allProblems, p);
+    if (!allProblems.some(x => x.id === p.id)) allProblems.push(p);
 }
 
 export function removeUnfinished(id: number) {
-    unfinishedProblems = unfinishedProblems.filter(x => x.id !== id);
+    removeProblem(id);
 }
 
 // make a problem finished and add it to the problem queue

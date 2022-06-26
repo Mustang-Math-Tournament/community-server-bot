@@ -1,10 +1,8 @@
-
-// Randomly generate id number
-// Very low chance of collision
-
 import { ColorResolvable, FileOptions, MessageEmbed } from "discord.js";
 import { color1 } from "../settings.json";
 
+// Randomly generate id number
+// Very low chance of collision
 // Probably should make this better later
 function createId() {
     return Math.floor(Math.random() * 1e9);
@@ -64,5 +62,31 @@ export class Problem {
             content,
             files: imageAttachments
         };
+    }
+
+    isCorrect(ans: ProblemAnswer) {
+        return this.answer.trim().toLowerCase() === ans.answer.trim().toLowerCase();
+    }
+}
+
+interface ProblemAnswerOptions {
+    userId: string;
+    problemId: number;
+    answer: string;
+    time: number;
+}
+
+// a user's answer to a problem
+export class ProblemAnswer {
+    userId: string;
+    problemId: number;
+    answer: string;
+    time: number;
+
+    constructor(opts: ProblemAnswerOptions) {
+        this.userId = opts.userId;
+        this.problemId = opts.problemId;
+        this.answer = opts.answer;
+        this.time = opts.time;
     }
 }
