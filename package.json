@@ -4,8 +4,8 @@
     "description": "",
     "main": "dist/index.js",
     "scripts": {
-        "start": "tsc && node .",
-        "publish": "tsc && node dist/publish.js"
+        "start": "node_modules/.bin/tsc && node .",
+        "publish": "node_modules/.bin/tsc && node dist/publish.js"
     },
     "author": "",
     "license": "ISC",

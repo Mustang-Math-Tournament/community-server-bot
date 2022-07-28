@@ -48,6 +48,6 @@ const slash = new SlashCommandSubcommandBuilder()
 
 export const commandQuestion = new Subcommand({
     name: "question",
-    exec,
-    slash
+    exec: exec,
+    slash: slash
 });
