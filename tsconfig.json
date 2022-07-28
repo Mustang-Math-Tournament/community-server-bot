@@ -1,6 +1,6 @@
 {
     "include": [
-        "./index.ts",
+      "./index.ts",
         "./publish.ts"
     ],
     "compilerOptions": {

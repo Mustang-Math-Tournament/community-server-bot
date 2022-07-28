@@ -2,10 +2,10 @@ import { ColorResolvable, FileOptions, MessageEmbed } from "discord.js";
 import { color1 } from "../settings.json";
 
 // Randomly generate id number
-// Very low chance of collision
+// Low chance of collision
 // Probably should make this better later
 function createId() {
-    return Math.floor(Math.random() * 1e9);
+    return Math.floor(Math.random() * 1e6);
 }
 
 export interface ProblemOptions {
