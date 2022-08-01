@@ -3,11 +3,12 @@
 The Mustang Math's Community Server Bot. Make sure to **check out a new branch** in the GitHub and commit all code to
 that branch, create pull requests when you're ready for a quality check.
 
-Make a new version in `changelog.md`, adding 0.1 to the prior version for patches, modifications, or minor updates. 
-Add 1 to the prior version for brand new features, overhauls, or other large updates. 
+After completing steps 1 and 2 below, make a new version in `changelog.md`, adding 0.1 to the prior version for patches, 
+modifications, or minor updates. Add 1 to the prior version for brand new features, overhauls, or other large updates. 
 Keep notes of all your contributions there.
 
-Be diligent with comments in your code: the more helpful/descriptive comments you write, the better.
+Be diligent with comments in your code: the more helpful/descriptive comments you write, the better. Don't forget to
+export all new commands you make and add them to `commandList.ts` in order for step 4 to work properly.
 
 ## Setup
 

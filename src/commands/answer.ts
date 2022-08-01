@@ -27,11 +27,12 @@ async function execAnswer(inter: CommandInteraction) {
     }
 
     const answer = inter.options.getString("answer", true);
+    const date = new Date();
     user.answers.push(new ProblemAnswer({
         answer,
         userId: user.id,
         problemId: shown.id,
-        time: new Date().getTime()
+        time: date.getHours() + (date.getMinutes() / 60) + (date.getSeconds() / (60 * 60))
     }));
     await inter.reply({ content: "Your answer has been submitted.", ephemeral: true });
 }
