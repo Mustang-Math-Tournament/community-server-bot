@@ -18,7 +18,8 @@
         "discord-api-types": "^0.33.2",
         "discord.js": "^13.7.0",
         "eslint": "^8.17.0",
-        "fs": "^0.0.1-security",
+        "mathjax-node": "^2.1.1",
+        "mathjax-node-svg2png": "^2.0.0",
         "minimist": "^1.2.6",
         "node-cleanup": "^2.1.2",
         "node-schedule": "^2.1.0"

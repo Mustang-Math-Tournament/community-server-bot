@@ -6,6 +6,7 @@ import { CommandInteraction } from "discord.js";
 import { verifyAdmin } from "../../../checkPermissions";
 import { Subcommand } from "../../../Command";
 import { getProblem, getUnfinished } from "../../../stores/problemQueue";
+import { typeset } from "../../../util/latex.js";
 
 async function exec(inter: CommandInteraction) {
     if (!verifyAdmin(inter, true)) return;
@@ -23,7 +24,19 @@ async function exec(inter: CommandInteraction) {
         return;
     }
 
-    const newQuestion = inter.options.getString("question");
+    const tex = inter.options.getString("question");
+    await typeset(tex).then(async (image: any) => {
+        await inter.reply({
+            files: [{
+                attachment: image,
+                name: "problem.png"
+            }]
+        });
+    }).catch(async (err: any) => {
+        await inter.reply(err);
+    });
+
+    /* const newQuestion = inter.options.getString("question");
     if (!newQuestion) {
         const oldQuestion = problemObj.question;
         problemObj.question = "";
@@ -32,7 +45,7 @@ async function exec(inter: CommandInteraction) {
     } else {
         problemObj.question = newQuestion;
         await inter.reply(`Problem ${problemId}'s question was updated to:\n${newQuestion}`);
-    }
+    }*/
 }
 
 const slash = new SlashCommandSubcommandBuilder()
