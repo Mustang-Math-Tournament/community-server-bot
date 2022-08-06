@@ -18,13 +18,17 @@
         "discord-api-types": "^0.33.2",
         "discord.js": "^13.7.0",
         "eslint": "^8.17.0",
+        "katex": "^0.16.0",
         "mathjax-node": "^2.1.1",
         "mathjax-node-svg2png": "^2.0.0",
         "minimist": "^1.2.6",
         "node-cleanup": "^2.1.2",
-        "node-schedule": "^2.1.0"
+        "node-html-to-image": "^3.2.4",
+        "node-schedule": "^2.1.0",
+        "puppeteer": "^16.0.0"
     },
     "devDependencies": {
+        "@types/katex": "^0.14.0",
         "@typescript-eslint/eslint-plugin": "^5.27.1",
         "@typescript-eslint/parser": "^5.27.1",
         "typescript": "^4.6.4"
