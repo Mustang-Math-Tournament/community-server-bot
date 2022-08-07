@@ -19,6 +19,7 @@
         "discord.js": "^13.7.0",
         "eslint": "^8.17.0",
         "katex": "^0.16.0",
+        "mathjax-full": "^3.2.2",
         "mathjax-node": "^2.1.1",
         "mathjax-node-svg2png": "^2.0.0",
         "minimist": "^1.2.6",
