@@ -19,6 +19,7 @@
         "discord.js": "^13.7.0",
         "eslint": "^8.17.0",
         "fs": "^0.0.1-security",
+        "html2canvas": "^1.4.1",
         "katex": "^0.16.0",
         "mathjax-full": "^3.2.2",
         "mathjax-node": "^2.1.1",

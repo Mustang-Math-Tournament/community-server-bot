@@ -7,12 +7,9 @@ import { verifyAdmin } from "../../../checkPermissions";
 import { Subcommand } from "../../../Command";
 import { getProblem, getUnfinished } from "../../../stores/problemQueue";
 import puppeteer from "puppeteer";
-import fs from "fs";
 
 async function exec(inter: CommandInteraction) {
     if (!verifyAdmin(inter, true)) return;
-
-    inter.reply({ content: "Processing..." });
 
     const problemId = inter.options.getInteger("problemid", true);
     const problemObj = getUnfinished(problemId);
@@ -27,7 +24,7 @@ async function exec(inter: CommandInteraction) {
         return;
     }
 
-    // const tex = inter.options.getString("question");
+    const tex = inter.options.getString("question");
     const html = `
     <html>
         <head>
@@ -37,18 +34,16 @@ async function exec(inter: CommandInteraction) {
             href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap"
             rel="stylesheet"
             />
-
             <style>
             body {
                 height: max-content;
                 font-size: 40px;
                 width: 900px;
                 max-width: 900px;
-                border: solid;
+                border: 2px solid white;
                 padding: 10px;
                 color: white;
             }
-
             h1 {
                 font-family: "Ubuntu";
                 margin: 0;
@@ -56,7 +51,6 @@ async function exec(inter: CommandInteraction) {
             }
             </style>
         </head>
-
         <body>
             <script type="text/x-mathjax-config">
             MathJax.Hub.Config({
@@ -64,19 +58,12 @@ async function exec(inter: CommandInteraction) {
                 "HTML-CSS": { linebreaks: { automatic: true } },
                 SVG: { linebreaks: { automatic: true } }
             });
-            window.addEventListener('resize', MJrerender);
-            function MJrerender(){
             MathJax.Hub.Queue(["Rerender",MathJax.Hub])
-            };
             </script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_SVG-full"></script>
-
             <h1>Problem of the Day</h1>
-
             <p id="example">
-            $$\text{What is the sum of }a_1 + a_2 + a_3 + a_4 + a_5 + a_6 + a_7 + a_8
-            + a_9 + a_{10} + a_{11} + a_{12} + a_{13} + a_{14} + a_{15} + a_{16} +
-            a_{17} + a_{18} + a_{19} + a_{20}\text{?}$$
+            $$${tex}$$
             </p>
         </body>
     </html>
@@ -95,7 +82,7 @@ async function exec(inter: CommandInteraction) {
         await page.close();
         await browser.close();
 
-        fs.writeFileSync("./image.png", imageBuffer);
+        inter.reply({ content: "Mustang Math: Problem of the Day" });
 
         await inter.channel?.send({
             files: [{
