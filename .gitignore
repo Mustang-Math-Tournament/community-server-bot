@@ -2,3 +2,4 @@
 dist
 config.json
 stored/*
+node_modules
