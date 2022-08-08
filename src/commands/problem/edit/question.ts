@@ -7,6 +7,7 @@ import { verifyAdmin } from "../../../checkPermissions";
 import { Subcommand } from "../../../Command";
 import { getProblem, getUnfinished } from "../../../stores/problemQueue";
 import puppeteer from "puppeteer";
+import fs from "fs";
 
 async function exec(inter: CommandInteraction) {
     if (!verifyAdmin(inter, true)) return;
@@ -30,19 +31,34 @@ async function exec(inter: CommandInteraction) {
     const html = `
     <html>
         <head>
+            <link rel="preconnect" href="https://fonts.googleapis.com" />
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+            <link
+            href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap"
+            rel="stylesheet"
+            />
+
             <style>
-                body {
-                    height: max-content;
-                    color: white;
-                    font-size: 40px;
-                    width: 900px;
-                    max-width: 900px; border: solid;
-                }
+            body {
+                height: max-content;
+                font-size: 40px;
+                width: 900px;
+                max-width: 900px;
+                border: solid;
+                padding: 10px;
+                color: white;
+            }
+
+            h1 {
+                font-family: "Ubuntu";
+                margin: 0;
+                padding: 0;
+            }
             </style>
         </head>
 
         <body>
-        <script type="text/x-mathjax-config">
+            <script type="text/x-mathjax-config">
             MathJax.Hub.Config({
                 CommonHTML: { linebreaks: { automatic: true } },
                 "HTML-CSS": { linebreaks: { automatic: true } },
@@ -52,18 +68,22 @@ async function exec(inter: CommandInteraction) {
             function MJrerender(){
             MathJax.Hub.Queue(["Rerender",MathJax.Hub])
             };
-        </script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_SVG-full"></script>
+            </script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_SVG-full"></script>
 
-        <h1>Problem Of The Day</h1>
-        <p id="example">$$a_1 + a_2 + a_3 + a_4 + a_5 + a_6 + a_7 + a_8 + a_9 + a_{10} + a_{11} + a_{12} + a_{13} + a_{14} + a_{15} + a_{16} + a_{17} + a_{18} + a_{19} + a_{20}$$</p>
+            <h1>Problem of the Day</h1>
+
+            <p id="example">
+            $$\text{What is the sum of }a_1 + a_2 + a_3 + a_4 + a_5 + a_6 + a_7 + a_8
+            + a_9 + a_{10} + a_{11} + a_{12} + a_{13} + a_{14} + a_{15} + a_{16} +
+            a_{17} + a_{18} + a_{19} + a_{20}\text{?}$$
+            </p>
         </body>
     </html>
     `;
 
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
-    await page.waitForTimeout(1000);
 
     await page.goto(`data:text/html,${html}`);
     const content = await page.$("body");
@@ -74,6 +94,8 @@ async function exec(inter: CommandInteraction) {
 
         await page.close();
         await browser.close();
+
+        fs.writeFileSync("./image.png", imageBuffer);
 
         await inter.channel?.send({
             files: [{
