@@ -1,31 +1,7 @@
-
-// Edit the question of a problem.
-
-import { SlashCommandSubcommandBuilder } from "@discordjs/builders";
-import { CommandInteraction } from "discord.js";
-import { verifyAdmin } from "../../../checkPermissions";
-import { Subcommand } from "../../../Command";
-import { getProblem, getUnfinished } from "../../../stores/problemQueue";
 import puppeteer from "puppeteer";
 
-async function exec(inter: CommandInteraction) {
-    if (!verifyAdmin(inter, true)) return;
-
-    const problemId = inter.options.getInteger("problemid", true);
-    const problemObj = getUnfinished(problemId);
-    if (!problemObj) {
-        let content: string;
-        if (getProblem(problemId)) { // already finalized
-            content = "This problem is already finalized. Use `/problem unfinish` to unfinalize it.";
-        } else {
-            content = "No problems exist with this id.";
-        }
-        await inter.channel?.send({ content });
-        return;
-    }
-
-    const tex = inter.options.getString("question");
-    const html = `
+export async function generateLatex(question: string, answer: string, attachment: any) {
+    let html = `
     <html>
         <head>
             <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -62,12 +38,28 @@ async function exec(inter: CommandInteraction) {
             </script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_SVG-full"></script>
             <h1>Problem of the Day</h1>
+            <p><strong>Question:</strong></p>
             <p id="example">
-            $$${tex}$$
+            $$${question}$$
             </p>
-        </body>
-    </html>
     `;
+
+    if (answer != "") {
+        html += `
+            <p><strong>Answer:</strong></p>
+            <p id="example">
+            $$${answer}$$
+            </p>
+        `;
+    }
+
+    if (attachment != null) {
+        html += `
+            <img src=${attachment} />
+        `;
+    }
+
+    html += "</body></html>";
 
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
@@ -82,30 +74,8 @@ async function exec(inter: CommandInteraction) {
         await page.close();
         await browser.close();
 
-        inter.reply({ content: "Mustang Math: Problem of the Day" });
-
-        await inter.channel?.send({
-            files: [{
-                attachment: imageBuffer,
-                name: "problem.png"
-            }]
-        });
+        return imageBuffer;
     }
+
+    return "";
 }
-
-const slash = new SlashCommandSubcommandBuilder()
-    .setName("question")
-    .setDescription("Add or edit the question of a problem.")
-    .addIntegerOption(opt => opt
-        .setName("problemid")
-        .setDescription("The id of the problem to edit.")
-        .setRequired(true))
-    .addStringOption(opt => opt
-        .setName("question")
-        .setDescription("The new text of the question. If not included, the question is erased."));
-
-export const commandQuestion = new Subcommand({
-    name: "question",
-    exec: exec,
-    slash: slash
-});
