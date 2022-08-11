@@ -7,6 +7,7 @@ import { getSetting } from "./settings";
 import Schedule from "node-schedule";
 import { errorInAdminChannel } from "../checkPermissions";
 import { showProblemResults } from "../showResults";
+import { generateLatex } from "../generateLatex";
 
 const scheduledJobs: { [key: string]: Schedule.Job } = {};
 
@@ -36,7 +37,14 @@ export async function releaseProblem(client: Client, guildId: string) {
         return;
     }
 
-    announceChannel.send(newProblem.createMessage());
+    const imageBuffer = await generateLatex(newProblem.question, newProblem.answer, newProblem.image != undefined ? newProblem.image : null);
+    await announceChannel.send({
+        content: "Mustang Math: Problem of the Day",
+        files: [{
+            attachment: imageBuffer,
+            name: "problem.png"
+        }]
+    });
     setShown(newProblem);
     removeTopProblem();
 

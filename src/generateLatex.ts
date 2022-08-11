@@ -1,6 +1,6 @@
 import puppeteer from "puppeteer";
 
-export async function generateLatex(question: string, answer: string, attachment: any) {
+export async function generateLatex(question: string | null, answer: string | null, image: string | null) {
     let html = `
     <html>
         <head>
@@ -15,7 +15,6 @@ export async function generateLatex(question: string, answer: string, attachment
                 height: max-content;
                 font-size: 40px;
                 width: 900px;
-                max-width: 900px;
                 border: 2px solid white;
                 padding: 10px;
                 color: white;
@@ -38,24 +37,36 @@ export async function generateLatex(question: string, answer: string, attachment
             </script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_SVG-full"></script>
             <h1>Problem of the Day</h1>
-            <p><strong>Question:</strong></p>
-            <p id="example">
-            $$${question}$$
-            </p>
     `;
 
-    if (answer != "") {
+    if (question && question != "") {
+        html += `
+        <p><strong>Question:</strong></p>
+        <p id="example">
+        $$${question}$$
+        </p>
+        `;
+    } else {
+        html += `
+        <p><strong>Question:</strong></p>
+        <p id="example">
+        $$None$$
+        </p>
+        `;
+    }
+
+    if (image && image != "") {
+        html += `
+            <div style="display: flex; align-items: center; justify-content: center;"><img src="${image}" alt="diagram" width="50%" /></div>
+        `;
+    }
+
+    if (answer && answer != "") {
         html += `
             <p><strong>Answer:</strong></p>
             <p id="example">
             $$${answer}$$
             </p>
-        `;
-    }
-
-    if (attachment != null) {
-        html += `
-            <img src=${attachment} />
         `;
     }
 
@@ -66,15 +77,10 @@ export async function generateLatex(question: string, answer: string, attachment
 
     await page.goto(`data:text/html,${html}`);
     const content = await page.$("body");
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(1500);
 
     if (content != null) {
-        const imageBuffer = await content.screenshot({ omitBackground: true });
-
-        await page.close();
-        await browser.close();
-
-        return imageBuffer;
+        return await content.screenshot({ omitBackground: true });
     }
 
     return "";

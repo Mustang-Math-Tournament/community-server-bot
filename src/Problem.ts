@@ -12,7 +12,7 @@ export interface ProblemOptions {
     question?: string;
     answer?: string;
     id?: number;
-    images?: string[];
+    image?: string;
     finished?: boolean;
 }
 
@@ -20,14 +20,14 @@ export class Problem {
     question: string;
     answer: string;
     id: number;
-    images?: string[]; // proxy URLs of attachments
+    image?: string; // proxy URLs of attachments
     finished: boolean;
 
     constructor(opts: ProblemOptions) {
         this.question = opts.question ?? "";
         this.answer = opts.answer ?? "";
         this.id = opts.id ?? createId();
-        this.images = opts.images;
+        this.image = opts.image;
         this.finished = opts.finished ?? false;
     }
 
@@ -38,17 +38,17 @@ export class Problem {
             .setTitle("Problem of the Day" + (date ? " " + date : ""))
             .setDescription(this.question);
 
-        if (this.images) embed.setImage(this.images[0]); // can only display first image
+        if (this.image) embed.setImage(this.image); // can only display first image
         return embed;
     }
 
     // Display problem as a message
     createMessage(answer?: boolean, date?: string) {
         // convert images into attached files
-        const imageAttachments = this.images?.map((url, ind) => ({
-            attachment: url,
-            name: `image${ind}.png`
-        })) as FileOptions[] | undefined;
+        const imageAttachments = {
+            attachment: this.image,
+            name: "image1.png"
+        } as FileOptions | undefined;
 
         // trying to keep it a bit more organized
         const content = [

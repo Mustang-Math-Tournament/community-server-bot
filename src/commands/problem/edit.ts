@@ -5,8 +5,9 @@ import { SlashCommandSubcommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
 import { verifyAdmin } from "../../checkPermissions";
 import { Subcommand } from "../../Command";
-import { getProblem, getUnfinished } from "../../stores/problemQueue";
+import { editUnfinished, getProblem, getUnfinished } from "../../stores/problemQueue";
 import { generateLatex } from "../../generateLatex";
+import { Problem } from "../../Problem";
 
 async function exec(inter: CommandInteraction) {
     if (!verifyAdmin(inter, true)) return;
@@ -24,20 +25,58 @@ async function exec(inter: CommandInteraction) {
         return;
     }
 
-    const question = inter.options.getString("question");
-    const answer = inter.options.getString("answer");
-    const attachment = inter.options.getAttachment("attachment");
+    const existingProblemInformation = getProblem(problemId);
+    let question = inter.options.getString("question");
+    let answer = inter.options.getString("answer");
+    let image = null;
 
-    const imageBuffer = await generateLatex(question ?? "", answer ?? "", attachment ?? null);
+    try {
+        const imageUrl = inter.options.getAttachment("attachment");
+        if (imageUrl && imageUrl != undefined) {
+            image = imageUrl.proxyURL;
+        }
+    } catch (e) {
+        image = null;
+    }
 
-    inter.reply({ content: "Mustang Math: Problem of the Day" });
+    if (!question && existingProblemInformation) {
+        question = existingProblemInformation.question;
+    }
 
-    await inter.channel?.send({
-        files: [{
-            attachment: imageBuffer,
-            name: "problem.png"
-        }]
+    if (!answer && existingProblemInformation) {
+        answer = existingProblemInformation.answer;
+    }
+
+    if (image != "" && existingProblemInformation && existingProblemInformation.image) {
+        image = existingProblemInformation.image;
+    }
+
+    const editedProblem = new Problem({
+        question: question ?? "",
+        answer: answer ?? "",
+        id: problemId,
+        image: image ?? "",
+        finished: false
     });
+    editUnfinished(editedProblem);
+
+    await inter.reply({
+        content: "Mustang Math: Problem of the Day"
+    });
+
+    try {
+        const imageBuffer = await generateLatex(question, answer, image);
+        await inter?.channel?.send({
+            files: [{
+                attachment: imageBuffer,
+                name: "problem.png"
+            }]
+        });
+    } catch (e) {
+        await inter?.channel?.send({
+            content: "Error to send problem preview!"
+        });
+    }
 }
 
 const slash = new SlashCommandSubcommandBuilder()
@@ -49,13 +88,13 @@ const slash = new SlashCommandSubcommandBuilder()
         .setRequired(true))
     .addStringOption(opt => opt
         .setName("question")
-        .setDescription("The new text of the question. If not included, the question is erased."))
+        .setDescription("The new text of the question. If not included, previous value of question will be used."))
     .addStringOption(opt => opt
         .setName("answer")
-        .setDescription("The new text of the answer. If not included, the answer is erased."))
+        .setDescription("The new text of the answer. If not included, previous value of answer will be used."))
     .addAttachmentOption(opt => opt
         .setName("attachment")
-        .setDescription("The new attachment. If not included, the attachments are erased."));
+        .setDescription("The new attachment. If not included, previous attachments will be used."));
 
 export const commandEdit = new Subcommand({
     name: "edit",
