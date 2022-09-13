@@ -5,6 +5,7 @@ import { SlashCommandSubcommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
 import { verifyAdmin } from "../../checkPermissions";
 import { Subcommand } from "../../Command";
+import { generateLatex } from "../../generateLatex";
 import { getProblem, getUnfinished } from "../../stores/problemQueue";
 
 async function exec(inter: CommandInteraction) {
@@ -19,12 +20,32 @@ async function exec(inter: CommandInteraction) {
         if (!problemUnfin) {
             await inter.reply({ content: "No problem with this id found.", ephemeral: true });
         } else {
-            await inter.reply(problemUnfin.createMessage(showAnswer));
+            const imageBuffer = await generateLatex(problemUnfin.question, showAnswer ? problemUnfin.answer : null, problemUnfin.image == undefined ? null : problemUnfin.image);
+            await inter.reply({
+                content: "Mustang Math: Problem of the Day"
+            });
+
+            await inter?.channel?.send({
+                files: [{
+                    attachment: imageBuffer,
+                    name: "problem.png"
+                }]
+            });
         }
         return;
     }
 
-    await inter.reply(problemFin.createMessage(showAnswer));
+    const imageBuffer = await generateLatex(problemFin.question, showAnswer ? problemFin.answer : null, problemFin.image == undefined ? null : problemFin.image);
+    await inter.reply({
+        content: "Mustang Math: Problem of the Day"
+    });
+
+    await inter?.channel?.send({
+        files: [{
+            attachment: imageBuffer,
+            name: "problem.png"
+        }]
+    });
 }
 
 const slash = new SlashCommandSubcommandBuilder()

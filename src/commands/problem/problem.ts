@@ -21,12 +21,12 @@ const slash = new SlashCommandBuilder()
     .addSubcommand(commandUnfinish.slash)
     .addSubcommand(commandRemove.slash)
     .addSubcommand(commandRelease.slash)
-    .addSubcommandGroup(commandEdit.slash)
+    .addSubcommand(commandEdit.slash)
     .addSubcommandGroup(commandList.slash);
 
 export const commandProblem = new Command({
     name: "problem",
     slashJSON: slash.toJSON(),
-    subcommands: [commandAdd, commandView, commandFinish, commandUnfinish, commandRemove, commandRelease],
-    subcommandGroups: [commandEdit, commandList]
+    subcommands: [commandAdd, commandEdit, commandView, commandFinish, commandUnfinish, commandRemove, commandRelease],
+    subcommandGroups: [commandList]
 });

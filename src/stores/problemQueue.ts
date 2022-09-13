@@ -120,8 +120,14 @@ export function getAllUnfinished() {
 
 export function addUnfinished(p: Problem) {
     unfinishedProblems.push(p.id);
-    console.log(allProblems, p);
     if (!allProblems.some(x => x.id === p.id)) allProblems.push(p);
+}
+
+export function editUnfinished(p: Problem) {
+    if (allProblems.some(x => x.id === p.id)) {
+        allProblems = allProblems.filter(x => x.id !== p.id);
+    }
+    allProblems.push(p);
 }
 
 export function removeUnfinished(id: number) {
